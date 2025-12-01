@@ -151,12 +151,12 @@ def resolve_ties(group: pd.DataFrame) -> pd.DataFrame:
 # -------------------- Main pipeline -------------------- #
 
 def main():
-    air_path = "../air_lichen_query.csv"
-    plant_path = "../plantlist.csv"
+    air_path = "air_lichen_query_full.csv"
+    plant_path = "plantlist.csv"
     air_code_col = "Code for scientific name and authority in lookup table"
     plant_sci_col = "Scientific Name with Author"
     name_col = "Name"
-    out_joined = "air_lichen_scinames.csv"
+    out_joined = "air_lichen_scinames_full.csv"
 
     # Read data
     air_df = robust_read(air_path)
@@ -201,7 +201,7 @@ def main():
         raise ValueError(f"Name column '{name_col}' not found in air file.")
 
     is_blank = merged[name_col].isna() | (merged[name_col].astype(str).str.strip() == "")
-    merged.loc[is_blank, name_col] = merged.loc[is_blank, "sci_name"]
+    merged["sci_name"] = merged[name_col].where(~is_blank, merged["sci_name"])
 
     merged.to_csv(out_joined, index=False)
 
