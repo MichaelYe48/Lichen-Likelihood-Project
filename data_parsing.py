@@ -103,7 +103,16 @@ def binRegionNode(colName, df):
     return df
 
 def binSpeciesNode(colName,df):
-    #TODO: Not implemented yet, but will be similar to region binning
+    df.dropna(subset=[colName], inplace=True)
+    newColName = colName + '_binned'
+    bins = {
+        'alesar' :'Species 1',
+        'flacap' : 'Species 2',
+        'hypina' : 'Species 3',
+        'letvul' : 'Species 4',
+        'plagla' : 'Species 5'
+    }
+    df[newColName] = df[colName].map(bins).fillna('Other')
     return df
     
 
@@ -137,11 +146,11 @@ notNum_list = [
 df_mod = df.copy()
 elementNames = []
 for n in element_list+num_list:
-    df_mod, newCol = filterByNode(n,df_mod,verbose=True)
+    df_mod, newCol = filterByNode(n,df_mod,verbose=False)
     elementNames.append(newCol)
 
 for n in notNum_list:
-    df_mod, newCol = filterByNode(n,df_mod,isNum=False,verbose=True)
+    df_mod, newCol = filterByNode(n,df_mod,isNum=False,verbose=False)
 
 bin_names = []
 #Bin elements
@@ -156,10 +165,10 @@ df_mod = binAirPollutionNode(num_list[1],df_mod)
 df_mod = binRegionNode(notNum_list[0],df_mod)
 df_mod = binSpeciesNode(notNum_list[1],df_mod)
 
-print(df_mod.shape)
 
 #Final DF:
 final_df = df_mod[bin_names]
+print(f'Cleaned dataset shape: {final_df.shape}')
 final_df.to_pickle('element_analysis.pkl')
 
 #To load pickle file:
