@@ -118,7 +118,7 @@ def binSpeciesNode(colName,df):
 
 
 #Load
-path = 'air_lichen_query.csv'
+path = 'element_analysis.csv'
 df = loadData(path)
 
 #Elements
