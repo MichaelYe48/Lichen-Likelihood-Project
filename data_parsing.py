@@ -160,3 +160,7 @@ print(df_mod.shape)
 
 #Final DF:
 final_df = df_mod[bin_names]
+final_df.to_pickle('element_analysis.pkl')
+
+#To load pickle file:
+#unpickled_df = pd.read_pickle('element_analysis.pkl') 
