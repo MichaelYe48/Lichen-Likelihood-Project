@@ -4,8 +4,6 @@ import csv
 import matplotlib.pyplot as plt
 
 
-
-
 def loadData(file_name):
     '''
     Loads csv containing element analysis data
@@ -71,18 +69,43 @@ def binElementNode(colName, df):
     '''
     newColName = colName + '_binned'
     bins = ['low', 'medium', 'high']
-    df[newColName] = pd.qcut(df[colName], q=3, labels=bins, retbins=True)
+    df[newColName], intervals = pd.qcut(df[colName], q=3, labels=bins, retbins=True)
 
-    return df, newColName
+    return df, newColName, intervals
 
-
-def binSpecialNode(colName, df, bins, values):
-    '''
-    Creates new column in df to store binned values for given node.
-    -based on values passed in
-    '''
+def binYearNode(colName, df):
     newColName = colName + '_binned'
-    df[newColName] = pd.qcut(df[colName], q=3, labels=bins, retbins=True)
+    bins = ["before 1995", "1995-2005", "2005-present"]
+    intervals = [0,1995,2005,np.inf]
+    df[newColName] = pd.cut(df[colName], intervals, labels=bins)
+    return df
+
+def binAirPollutionNode(colName, df):
+    newColName = colName + '_binned'
+    bins = ['best', 'good', 'fair', 'degraded', 'poor', 'worst']
+    intervals = [-10, -.11, .02, .21, .35, .49, np.inf]
+    df[newColName] = pd.cut(df[colName], intervals, labels=bins)
+    return df
+
+def binRegionNode(colName, df):
+    df.dropna(subset=[colName], inplace=True)
+    newColName = colName + '_binned'
+    bins = {
+        '1-4' : [1,2,3,4,14],
+        '5'   : [5],
+        '6'   : [6],
+        '7'   : [7],
+        '8-9' : [8,9,89],
+        '10'  : [10] 
+    }
+    inv_map = { v : k for (k,l) in bins.items() for v in l}
+    df[newColName] = df[colName].map(inv_map)
+    return df
+
+def binSpeciesNode(colName,df):
+    #TODO: Not implemented yet, but will be similar to region binning
+    return df
+    
 
 
 #Load
@@ -106,27 +129,32 @@ num_list = [
     'Air pollution score'
 ]
 notNum_list = [
-    'region',
-    'Code for scientific name'
+    'Region',
+    'Code for scientific name and authority in lookup table'
 ]
 
 #Filter
 df_mod = df.copy()
-colNames = []
+elementNames = []
 for n in element_list+num_list:
     df_mod, newCol = filterByNode(n,df_mod,verbose=True)
-    colNames.append(newCol)
+    elementNames.append(newCol)
 
 for n in notNum_list:
     df_mod, newCol = filterByNode(n,df_mod,isNum=False,verbose=True)
-    colNames.append(newCol)
 
-#Bin
 bin_names = []
-for n in element_list+num_list:
-    df_mod, binCol = binElementNode(n,df_mod,verbose=True)
+#Bin elements
+elementIntervals = []
+for n in elementNames+num_list:
+    df_mod, binCol, intervals = binElementNode(n,df_mod)
     bin_names.append(newCol)
-
+    elementIntervals.append(intervals)
+# Bin other nodes
+df_mod = binYearNode(num_list[0],df_mod)
+df_mod = binAirPollutionNode(num_list[1],df_mod)
+df_mod = binRegionNode(notNum_list[0],df_mod)
+df_mod = binSpeciesNode(notNum_list[1],df_mod)
 
 print(df_mod.shape)
 
