@@ -148,7 +148,7 @@ For this Bayesian Network, we have a hidden node that essentially separates our 
 
 In the Expectation Step, we compute the probability distribution over the hidden variable $H$ and the pollution level $Pe$ for each data point, given the current parameter estimates and observed data. For each sample $n$, we compute:
 \[
-\gamma^{(n)}(h,pe) = P(H=h, Pe=pe \mid \text{observed data}^{(n)})
+\gamma^{(n)}(h,pe) = P(H=h \mid Pe=pe, \text{ observed data}^{(n)})
 \]
 
 This is calculated using Bayes' rule; the full equation multiplies $P(h \mid R^{(n)}, F^{(n)}$ by the likelihood $P(pe \mid h)$, and by the likelihoods of all observed measurements $P(Sp^{(n)} \mid h,pe)$, $P(Tg^{(n)} \mid Sp^{(n)}, pe)$, $P(Tm^{(n)} \mid Sp^{(n)}, pe)$, $P(Ta^{(n)} \mid Sp^{(n)}, pe)$ and $P(Th^{(n)} \mid Sp^{(n)}, pe)$. The denominator normalizes over all possible combinations of $h$ and $pe$.
