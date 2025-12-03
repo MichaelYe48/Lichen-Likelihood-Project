@@ -152,12 +152,11 @@ for n in element_list+num_list:
 for n in notNum_list:
     df_mod, newCol = filterByNode(n,df_mod,isNum=False,verbose=False)
 
-bin_names = []
+
 #Bin elements
 elementIntervals = []
 for n in elementNames+num_list:
-    df_mod, binCol, intervals = binElementNode(n,df_mod)
-    bin_names.append(newCol)
+    df_mod, _, intervals = binElementNode(n,df_mod)
     elementIntervals.append(intervals)
 # Bin other nodes
 df_mod = binYearNode(num_list[0],df_mod)
@@ -165,8 +164,8 @@ df_mod = binAirPollutionNode(num_list[1],df_mod)
 df_mod = binRegionNode(notNum_list[0],df_mod)
 df_mod = binSpeciesNode(notNum_list[1],df_mod)
 
-
 #Final DF:
+bin_names = [b for b in list(df_mod.columns) if "_binned" in b]
 final_df = df_mod[bin_names]
 print(f'Cleaned dataset shape: {final_df.shape}')
 final_df.to_pickle('element_analysis.pkl')
