@@ -18,6 +18,18 @@
 \usepackage{graphicx}
 \usepackage{placeins}
 
+%extra subsection layer - \paragraph{<title>}
+\makeatletter
+\renewcommand\paragraph{\@startsection{paragraph}{4}{\z@}%
+            {-2.5ex\@plus -1ex \@minus -.25ex}%
+            {1.25ex \@plus .25ex}%
+            {\normalfont\normalsize\bfseries}}
+\makeatother
+\setcounter{secnumdepth}{4} % how many sectioning levels to assign numbers to
+\setcounter{tocdepth}{4}    % how many sectioning levels to show in ToC
+%end
+
+
 \title{Lichen-Based Bayesian Networks for Pollution Inference}
 
 
@@ -180,79 +192,53 @@ For this Bayesian Network, we have a hidden node that separates our region/envir
 % E-STEP: Posterior over hidden variables per sample
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-In the Expectation Step, we compute the probability distribution over the hidden variable $H$ given the pollution level $Pe$ for each data point and the current parameter estimates and observed data. For each sample $n$, we define:
-\[
-\gamma^{(n)}(h,pe) = P(H=h \mid Pe=pe, \text{ observed data}^{(n)})
-\]
+\paragraph{E-step: Obtain posterior for hidden node}
 
-This is calculated using Bayes' rule; the full equation multiplies $P(h \mid R^{(n)}, F^{(n)}$ by the likelihood $P(pe \mid h)$, and by the likelihoods of all observed measurements $P(Sp^{(n)} \mid h,pe)$, $P(Tg^{(n)} \mid Sp^{(n)}, pe)$, $P(Tm^{(n)} \mid Sp^{(n)}, pe)$, $P(Ta^{(n)} \mid Sp^{(n)}, pe)$ and $P(Th^{(n)} \mid Sp^{(n)}, pe)$. The denominator normalizes over all possible combinations of $h$ and $pe$.
+In the Expectation Step, we compute the posterior distribution of the hidden variable $H$ given the visible nodes {$F,\ R,\ Pe\ Sp$}. For a value of h $H=h$, we define:
 
-%\[
-%\gamma^{(n)}(h,pe)=
-%\frac{
-%P(h \mid R^{(n)},F^{(n)})\,
-%P(pe \mid h)\,
-%P(Sp^{(n)} \mid h,pe)\,
-%P(Tg^{(n)} \mid Sp^{(n)},pe)\,
-%P(Tm^{(n)} \mid Sp^{(n)},pe)\,
-%P(Ta^{(n)} \mid Sp^{(n)},pe)\,
-%P(Th^{(n)} \mid Sp^{(n)},pe)
-%}
-%{
-%\sum_{h'}\sum_{pe'}
-%P(h' \mid R^{(n)},F^{(n)})\,
-%P(pe' \mid h')\,
-%P(Sp^{(n)} \mid h',pe')\,
-%P(Tg^{(n)} \mid Sp^{(n)},pe')\,
-%P(Tm^{(n)} \mid Sp^{(n)},pe')\,
-%P(Ta^{(n)} \mid Sp^{(n)},pe')\,
-%P(Th^{(n)} \mid Sp^{(n)},pe')
-%}
-%\]
+\begin{align*}
+    P(H=h \mid F=f, R=r, Pe=p, Sp =s) &= \frac{P(h,f,r,p,s)}
+                                           {\sum_{h' \in H} P(f, r, h', p, s)}\\
+                                      &= \gamma (h,f,r,p,s)
+\end{align*}
 
-In the Maximization Step, we update all CPTs using the expected counts from the E-step. The expected count of hidden state $h$ and pollution level $pe$ is defined as:
-\[
-N(h,pe) = \sum_n \gamma^{(n)}(h,pe)
-\]
-which represents how many times the hidden state was $h$ and the pollution was $pe$ across all samples.
+Since all tissue composition nodes are D-separated from the hidden node by the visible nodes $Pe$ and $Sp$, they do not need to be included in the posterior. The joint distribution of these terms can be expanded using the CPTs. For brevity's sake, this equation is referred to as $\gamma(h,f,r,p,s)$.
 
-Different nodes are updated differently based on whether they involve $H$ or not.
 
-Beginning with the Environmental Nodes $R$ and $F$, since they do not depend on $H$ or $Pe$, they can be updated using standard MLE frequency counts.
-\[
-P(R=r) =\frac{\sum_{n: R^{(n)}=r} 1}{N},
-\quad
-P(F=f) =\frac{\sum_{n: F^{(n)}=f} 1}{N},
-\quad
-\]
+\paragraph{M-step: Update CPTs}
+In the Maximization Step, we update all CPTs using the expected counts from the E-step. For all equations described, the following notation holds true:\\
+\vspace{-4ex}
+\begin{itemize}
+    \item $T$: total number of samples
+    \item $t$: sample currently being evaluated
+    \item $I(x,x_t)$: Indicator function. If $x_t = x$, then the result is 1. If not, the result is 0
+\end{itemize}
+\vspace{-1ex}
+The root nodes $R$ and $F$ do not rely on $H$, so they can be updated using the standard MLE frequency counts. This equation describes that, where $X$ represents each respective node:
+$$P(X=x) = \frac{\sum_{t=1}^T I(x,x_t)}{T}$$
+\vspace{-1ex}
 
-The hidden state's CPT is updated by aggregating the expected counts $\gamma$ over samples with matching parent values of $R$ and $F$, the normalizing. Let $\pi_H = (R,F)$:
+The hidden node $h$ is updated by aggregating the expected counts of $H=h$ for parent-node values $F=f, R=r$, then normalizing. It is updated with the following equation:\\
+$$P(H=h \mid F=f, R=r) \xleftarrow{} \frac{\sum_{t=1}^{T} I(f,f_t)\ I(r,r_t)\ \gamma(h,f,r,p_t,s_t)}
+                                        {\sum_{t=1}^{T} I(f,f_t)\ I(r,r_t) }$$
+\vspace{-1ex}
 
-\[
-P(H=h \mid \pi_H)=\frac{
-\sum_{n:\,\pi_H^{(n)}=\pi_H}\sum_{pe} \gamma^{(n)}(h,pe)
-}{\sum_{n:\,\pi_H^{(n)}=\pi_H}\sum_{h'}\sum_{pe} \gamma^{(n)}(h',pe)}
-\]
+The pollution node $Pe$ is updated by summing the expected counts across all samples with the following equation:\\
+$$P(Pe=p \mid H=h) \xleftarrow{} \frac{\sum_{t=1}^T I(p,p_t)\ \gamma(h,f_t,r_t,p_t,s_t)}
+                                      {\sum_{t=1}^T \gamma(h,f_t,r_t,p_t,s_t)}$$
+\vspace{-1ex}
 
-Pollution $P(Pe \mid H)$ is updated by summing expected counts across all samples for each $(h,pe)$ pair:
+Similar to pollution, the lichen species node $Sp$ is updated using expected counts of parent $H=h$ along with parent $Pe=p$. It uses the following equation:\\
+$$P(Sp=p \mid H=h, Pe=p) \xleftarrow{} \frac{\sum_{t=1}^T I(s,s_t)\ I(p,p_t)\ \gamma(h,f_t,r_t,p,s_t)}
+                                      {\sum_{t=1}^T I(p,p_t)\ \gamma(h,f_t,r_t,p,s_t)}$$
+\vspace{-1ex}
 
-\[
-P(Pe=pe \mid H=h)=\frac{\sum_{n} \gamma^{(n)}(h,pe)}{\sum_{n}\sum_{pe'}\gamma^{(n)}(h,pe')}
-\]
+The tissue composition nodes are separated D from the hidden node, and therefore can follow the standard MLE formula. It is calculated with the following equation, where $X$ represents each respective node:
+$$P(X=x \mid Sp=s, Pe=p) = \frac{\sum_{t=1}^T I(x,x_t)\ I(s,s_t)\ I(p,p_t)}
+                                            {\sum_{t=1}^T I(s,s_t)\ I(p,p_t)}$$
+\vspace{-1ex}
 
-For each lichen species value, we weight by the posterior probability of each hidden state configuration:
 
-\[
-P(Sp=sp \mid H=h,Pe=pe)=\frac{\sum_{n:Sp^{(n)}=sp} \gamma^{(n)}(h,pe)}{\sum_{n}\gamma^{(n)}(h,pe)}
-\]
-
-Finally, for the tissue nodes, each tissue variable $T \in \{Tg,Tm,Ta,Th\}$ depends on the observed species and pollution level. We marginalize over $h$ by summing the posteriors:
-
-\[
-P(T=t \mid Sp=sp, Pe=pe) = \frac{ \sum_{n:T^{(n)}=t} \sum_{h}\gamma^{(n)}(h,pe)}{\sum_{n}\sum_{h}\gamma^{(n)}(h,pe)}
-\]
-
-These E and M steps are repeated in turn until the log-likelihood of the data converges or a maximum number of iterations is reached.
 
 \section{Results and Discussion}
 
