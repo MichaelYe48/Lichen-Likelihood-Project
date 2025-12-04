@@ -88,11 +88,19 @@ Air pollution score is converted into a categorical pollution level (e.g., low/m
 
 These steps are crucial because: If species names are inconsistent or misaligned across tables, we’d mix different taxa and distort the relationship between lichen communities, tissue chemistry, and pollution. Standardizing and joining species information ensures that when the model learns “this species tends to occur at high nitrogen sites” or “this tissue concentration pattern is associated with metal pollution,” it’s actually talking about the same organism. The network structure and CPTs are defined over finite states, so we must discretize continuous features (pollution scores, elevation, tissue concentrations, etc.) into meaningful categories. Doing this with USFS thresholds and literature-based breakpoints keeps the categories ecologically interpretable (e.g., what counts as “high” copper or “high” pollution from a lichen-bioindicator perspective).
 
-I’ll show the exact dataset information on Piazza, when I have time to write it up.
+\color{red}I’ll show the exact dataset information on Piazza, when I have time to write it up.\color{black}
 
 \section{Modeling and Inference}
 
 The data can be arranged into a Bayesian Network to model dependencies between the environment, lichen tissue data, and the pollution found in the environment. The networks can be arranged into one utilizing complete data and one utilizing a hidden node to track unobserved temporal qualities about the environment.
+
+For all equations described, the following notation holds true:\\
+\vspace{-4ex}
+\begin{itemize}
+    \item $T$: total number of samples
+    \item $t$: sample currently being evaluated
+    \item $I(x,x_t)$: Indicator function. If $x_t = x$, then the result is 1. If not, the result is 0
+\end{itemize}
 
 \subsection{Bayesian Network with Complete Data}
 This model is a simplified representation of the data without a hidden node, and is to be used when the variables in the Bayesian Network are fully observed. Without a hidden node, Field Collection Date and Region connect directly to Pollution in the Environment and Lichen Species. This model assumes that the direct temporal and regional information is sufficient to predict pollution levels. Due to its simpler structure and its use of complete, observed data, this model allows for direct interpretability.
@@ -108,25 +116,48 @@ Figure 2 depicts the graph structure of the Bayesian Network with Complete Data:
 \end{figure}
 \FloatBarrier
 
+This Bayesian Network contains the following nodes:
+\begin{itemize}
+	\item{Observed Environment Variables:}
+	\begin{itemize}
+		\item{$R$: Region}
+		\item{$F$: Field Collection Date}
+	\end{itemize}
+	\item{$Pe$: Pollution in Environment}
+	\item{$Sp$: Lichen Species present in the sample}
+	\item{Tissue Composition Measurements (by dry weight of samples):}
+	\begin{itemize}
+		\item{$TNi$: Tissue Composition - Nitrogen}
+        \item{$TS$: Tissue Composition - Sulfur}
+        \item{$TP$: Tissue Composition - Phosphorus}
+        \item{$TPb$: Tissue Composition - Lead}
+        \item{$TCu$: Tissue Composition - Copper}
+        \item{$TCr$: Tissue Composition - Chromium}
+	\end{itemize}
+\end{itemize}
+
+
 \subsubsection{Optimization with Maximum Likelihood Estimation}
 Maximum Likelihood Estimation (MLE) estimates the CPTs that maximize the likelihood of observing the training data by computing empirical frequencies from complete observations. The advantages of utilizing a simplified MLE model here is that this calculation is computationally efficient and there are no convergence issues as there are with Expectation Maximization.
 
 This means that for the root nodes we can calculate their likelihood as follows:
-
+%
 \[
-P(R=r) =\frac{\sum_{n: R^{(n)}=r} 1}{N},
+P(R=r) =\frac{\sum_{t=1}^T I(r,r_t)}{T},
 \quad
-P(F=f) =\frac{\sum_{n: F^{(n)}=f} 1}{N},
+P(F=f) =\frac{\sum_{t=1}^T I(f,f_t)}{T},
 \quad
 \]
 
-and the equations for pollution $P(Pe \mid R, F)$, Lichen Species $P(Sp \mid F, Pe)$ and Tissue Composition $P(T \mid Sp, Pe)$ are the following:
+The equations for Pollution $P(Pe \mid R, F)$, Lichen Species $P(Sp \mid F, Pe)$ and Tissue Composition $P(E \mid Sp, Pe)$ are as follows. $E$ is used to represent all element nodes for tissue composition \{$TNi,\ TS,\ TP,\ TPb,\ TCu,\ TCr$\}.
+%
+\[P(Pe = p \mid R = r, F = f) = \frac{\sum_{t=1}^T I(p,p_t)\ I(r,r_t)\ I(f,f_t)}{\sum_{t=1}^T I(r,r_t)\ I(f,f_t)}\]
 
-\[P(Pe = pe \mid R = r, F = f) =\frac{\sum_{n: R^{(n)}=r, F^{(n)} = f, Pe^(n) = pe} 1}{\sum_{n: R^{(n)}=r, F^{(n)} = f} 1}\]
+\[P(Sp = s \mid R = r, F = f, Pe = p) = \frac{\sum_{t=1}^T I(s,s_t)\ I(r,r_t)\ I(f,f_t)\ I(p,p_t)}{\sum_{t=1}^T I(r,r_t)\ I(f,f_t)\ I(p,p_t)}\]
 
-\[P(Sp = sp \mid R = r, F = f, Pe = pe) =\frac{\sum_{n: R^{(n)} = r, F^{(n)} = f, Pe^(n) = pe, Sp^{(n)}=sp, } 1}{\sum_{n: R^{(n)} = r, F^{(n)} = f, Pe^{(n)} = pe} 1}\]
+\[P(E = e \mid Sp = s, Pe=p) = \frac{\sum_{t=1}^T I(e,e_t)\ I(s,s_t)\ I(p,p_t)}{\sum_{t=1}^T I(s,s_t)\ I(p,p_t)}\]
 
-\[P(T = t \mid Sp = sp, Pe=pe) =\frac{\sum_{n: Sp^{(n)}=sp,Pe^(n) = pe, T^{(n)}=t} 1}{\sum_{n: R^{(n)}=r, F^{(n)} = f} 1}\]
+
 
 \subsection{Bayesian Network with Hidden Node}
 
@@ -141,28 +172,7 @@ The rationale for introducing a hidden node to model hidden spatiotemporal aspec
 \end{figure}
 \FloatBarrier
 
-Our Bayesian Network contains the following nodes:
-\begin{itemize}
-	\item{Observed Environment Variables:}
-	\begin{itemize}
-		\item{$R$: Region}
-		\item{$F$: Field Collection Date}
-	\end{itemize}
-	\item{$H$: Hidden Environmental Factor (latent temporal aspects like seasonal pattern, microclimate, etc.)}
-	\item{$Pe$: Pollution in Environment (latent given $H$)}
-	\item{$Sp$: Lichen Species present in the sample}
-	\item{Tissue Composition Measurements (by dry weight of samples):}
-	\begin{itemize}
-		\item{$TNi$: Tissue Composition - Nitrogen}
-        \item{$TS$: Tissue Composition - Sulfur}
-        \item{$TP$: Tissue Composition - Phosphorus}
-        \item{$TPb$: Tissue Composition - Lead}
-        \item{$TCu$: Tissue Composition - Copper}
-        \item{$TCr$: Tissue Composition - Chromium}
-	\end{itemize}
-\end{itemize}
-
-For this Bayesian Network, we have a hidden node that separates our region/environment variables from the lichen species and air pollution score. The goal of the node is to learn a variable that represents spatiotemporal aspects of the environment to predict air pollution level. The presence of this node means that we cannot naively use a Maximum Likelihood Estimate like we would for a network with complete data without some additional work. Therefore, we will opt to learn our CPTs through the Expectation Maximization (EM) algorithm. For each sample we aim to first calculate the probability of our hidden variable (the relevance of our regional data) given our other observed features. This probability is our posterior. Then, in the Maximization step, we want to update our CPTs using the posterior we calculated in the E step. Essentially, we will use our estimated expectation to fill in the value of our hidden node. The ultimate goal of using EM for this task and introducing our hidden variable is to give our model some flexibility in terms of how it weights the relevance of our region based features.
+For this Bayesian Network, all nodes are the same as for the previous model besides the addition of a hidden node $H$. This node separates our region/environment variables from the lichen species and air pollution score. The goal of this node is to learn latent spatial temporal aspects such as seasonal patterns or regional mineral baselines. The presence of this node means that we cannot naively use a Maximum Likelihood Estimate like we would for a network with complete data without some additional work. Therefore, we will opt to learn our CPTs through the Expectation Maximization (EM) algorithm. For each sample we aim to first calculate the probability of our hidden variable (the relevance of our regional data) given our other observed features. This probability is our posterior. Then, in the Maximization step, we want to update our CPTs using the posterior we calculated in the E step. Essentially, we will use our estimated expectation to fill in the value of our hidden node. The ultimate goal of using EM for this task and introducing our hidden variable is to give our model some flexibility in terms of how it weights the relevance of our region based features.
 
 \subsubsection{Optimization with Expectation Maximization}
 
@@ -211,14 +221,8 @@ Since all tissue composition nodes are D-separated from the hidden node by the v
 
 \paragraph{M-step: Update CPTs}
 \vspace{-2ex}
-In the Maximization Step, we update all CPTs using the expected counts from the E-step. For all equations described, the following notation holds true:\\
-\vspace{-4ex}
-\begin{itemize}
-    \item $T$: total number of samples
-    \item $t$: sample currently being evaluated
-    \item $I(x,x_t)$: Indicator function. If $x_t = x$, then the result is 1. If not, the result is 0
-\end{itemize}
-\vspace{-1ex}
+In the Maximization Step, we update all CPTs using the expected counts from the E-step.\\
+%
 The root nodes $R$ and $F$ do not rely on $H$, so they can be updated using the standard MLE frequency counts. This equation describes that, where $X$ represents each respective node:
 $$P(X=x) = \frac{\sum_{t=1}^T I(x,x_t)}{T}$$
 \vspace{-1ex}
@@ -238,7 +242,7 @@ $$P(Sp=p \mid H=h, Pe=p) \xleftarrow{} \frac{\sum_{t=1}^T I(s,s_t)\ I(p,p_t)\ \g
                                       {\sum_{t=1}^T I(p,p_t)\ \gamma(h,f_t,r_t,p,s_t)}$$
 \vspace{-1ex}
 
-The tissue composition nodes {$TNi,\ TS,\ TP,\ TPb,\ TCu,\ TCr$} are separated D from the hidden node, and therefore can follow the standard MLE formula. It is calculated with the following equation, where $X$ represents each respective node:\\
+The tissue composition nodes \{$TNi,\ TS,\ TP,\ TPb,\ TCu,\ TCr$\} are separated D from the hidden node, and therefore can follow the standard MLE formula. It is calculated with the following equation, where $X$ represents each respective node:\\
 $$P(X=x \mid Sp=s, Pe=p) = \frac{\sum_{t=1}^T I(x,x_t)\ I(s,s_t)\ I(p,p_t)}
                                             {\sum_{t=1}^T I(s,s_t)\ I(p,p_t)}$$
 \vspace{-1ex}
