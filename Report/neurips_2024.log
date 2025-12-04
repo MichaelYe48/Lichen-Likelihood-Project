@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.3.8)  3 DEC 2025 17:52
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.3.8)  3 DEC 2025 18:21
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -576,11 +576,11 @@ File: ts1ptm.fd 2001/06/04 font definitions for TS1/ptm.
 
 {/usr/local/texlive/2025/texmf-var/fonts/map/pdftex/updmap/pdftex.map}{/usr/loc
 al/texlive/2025/texmf-dist/fonts/enc/dvips/base/8r.enc}]
-<MLE_BN.png, id=59, 1094.0875pt x 983.675pt>
+<MLE_BN.png, id=59, 1001.7425pt x 899.36pt>
 File: MLE_BN.png Graphic file (type png)
 <use MLE_BN.png>
 Package pdftex.def Info: MLE_BN.png  used on input line 93.
-(pdftex.def)             Requested size: 298.11374pt x 268.02736pt.
+(pdftex.def)             Requested size: 298.11374pt x 267.64183pt.
 
 
 LaTeX Warning: `h' float specifier changed to `ht'.
@@ -590,11 +590,11 @@ LaTeX Warning: `h' float specifier changed to `ht'.
 [2]
 
 [3 <./MLE_BN.png>]
-<EM_BN.png, id=81, 1023.825pt x 915.42pt>
+<EM_BN.png, id=81, 975.645pt x 883.3pt>
 File: EM_BN.png Graphic file (type png)
 <use EM_BN.png>
 Package pdftex.def Info: EM_BN.png  used on input line 126.
-(pdftex.def)             Requested size: 298.11374pt x 266.54054pt.
+(pdftex.def)             Requested size: 298.11374pt x 269.89806pt.
 
 
 [4 <./EM_BN.png>]
@@ -686,7 +686,7 @@ live/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/local/texli
 ve/2025/texmf-dist/fonts/type1/public/cm-super/sftt1000.pfb></usr/local/texlive
 /2025/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2025/texm
 f-dist/fonts/type1/urw/times/utmr8a.pfb>
-Output written on neurips_2024.pdf (7 pages, 485615 bytes).
+Output written on neurips_2024.pdf (7 pages, 468108 bytes).
 PDF statistics:
  193 PDF objects out of 1000 (max. 8388607)
  152 compressed objects within 2 object streams
