@@ -151,12 +151,14 @@ Our Bayesian Network contains the following nodes:
 	\item{$H$: Hidden Environmental Factor (latent temporal aspects like seasonal pattern, microclimate, etc.)}
 	\item{$Pe$: Pollution in Environment (latent given $H$)}
 	\item{$Sp$: Lichen Species present in the sample}
-	\item{Tissue Composition Measurements:}
+	\item{Tissue Composition Measurements (by dry weight of samples):}
 	\begin{itemize}
-		\item{$Tg$: Tissue-Gas (gas content in lichen tissue)}
-		\item{$Tm$: Tissue-Metals (metal concentrations in lichen tissue)}
-		\item{$Ta$: Tissue-Ash (ash content in lichen tissue)}
-		\item{$Th$: Tissue-Heavy Metals (heavy metal concentration in lichen tissue)}
+		\item{$TNi$: Tissue Composition - Nitrogen}
+        \item{$TS$: Tissue Composition - Sulfur}
+        \item{$TP$: Tissue Composition - Phosphorus}
+        \item{$TPb$: Tissue Composition - Lead}
+        \item{$TCu$: Tissue Composition - Copper}
+        \item{$TCr$: Tissue Composition - Chromium}
 	\end{itemize}
 \end{itemize}
 
@@ -178,10 +180,12 @@ For this Bayesian Network, we have a hidden node that separates our region/envir
 %   Pe = Pollution in Environment (latent given H)
 
 %   Sp = Lichen/Tissue Species
-%   Tg = Tissue-Gas
-%   Tm = Tissue-Metals
-%   Ta = Tissue-Ash
-%   Th = Tissue-HeavyMetals
+%   TNi = Tissue-Nitrogen
+%   TS = Tissue-Sulfur
+%   TP = Tissue-Phosphorus
+%   TPb = Tissue-Lead
+%   TCu = Tissue-Copper
+%   TCr = Tissue-Chromium
 %
 %   H :(R,F,S,E,Pp)
 %   Pe : H
@@ -193,8 +197,8 @@ For this Bayesian Network, we have a hidden node that separates our region/envir
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \paragraph{E-step: Obtain posterior for hidden node}
-
-In the Expectation Step, we compute the posterior distribution of the hidden variable $H$ given the visible nodes {$F,\ R,\ Pe\ Sp$}. For a value of h $H=h$, we define:
+\vspace{-2ex}
+In the Expectation Step, we compute the posterior distribution of the hidden variable $H$ given the visible nodes {$F,\ R,\ Pe\ Sp$}. For a value of $H=h$, we define:
 
 \begin{align*}
     P(H=h \mid F=f, R=r, Pe=p, Sp =s) &= \frac{P(h,f,r,p,s)}
@@ -206,6 +210,7 @@ Since all tissue composition nodes are D-separated from the hidden node by the v
 
 
 \paragraph{M-step: Update CPTs}
+\vspace{-2ex}
 In the Maximization Step, we update all CPTs using the expected counts from the E-step. For all equations described, the following notation holds true:\\
 \vspace{-4ex}
 \begin{itemize}
@@ -233,11 +238,14 @@ $$P(Sp=p \mid H=h, Pe=p) \xleftarrow{} \frac{\sum_{t=1}^T I(s,s_t)\ I(p,p_t)\ \g
                                       {\sum_{t=1}^T I(p,p_t)\ \gamma(h,f_t,r_t,p,s_t)}$$
 \vspace{-1ex}
 
-The tissue composition nodes are separated D from the hidden node, and therefore can follow the standard MLE formula. It is calculated with the following equation, where $X$ represents each respective node:
+The tissue composition nodes {$TNi,\ TS,\ TP,\ TPb,\ TCu,\ TCr$} are separated D from the hidden node, and therefore can follow the standard MLE formula. It is calculated with the following equation, where $X$ represents each respective node:\\
 $$P(X=x \mid Sp=s, Pe=p) = \frac{\sum_{t=1}^T I(x,x_t)\ I(s,s_t)\ I(p,p_t)}
                                             {\sum_{t=1}^T I(s,s_t)\ I(p,p_t)}$$
 \vspace{-1ex}
 
+\paragraph{Running EM}
+\vspace{-2ex}
+The E and M steps are repeated in turn for every value of every node until the log-likelihood of the data converges or a maximum number of iterations is reached.
 
 
 \section{Results and Discussion}
