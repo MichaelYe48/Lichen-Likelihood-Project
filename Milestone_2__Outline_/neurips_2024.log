@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.3.8)  3 DEC 2025 14:07
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.3.8)  3 DEC 2025 17:52
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -576,11 +576,11 @@ File: ts1ptm.fd 2001/06/04 font definitions for TS1/ptm.
 
 {/usr/local/texlive/2025/texmf-var/fonts/map/pdftex/updmap/pdftex.map}{/usr/loc
 al/texlive/2025/texmf-dist/fonts/enc/dvips/base/8r.enc}]
-<EM_BN.png, id=59, 1023.825pt x 915.42pt>
-File: EM_BN.png Graphic file (type png)
-<use EM_BN.png>
-Package pdftex.def Info: EM_BN.png  used on input line 92.
-(pdftex.def)             Requested size: 298.11374pt x 266.54054pt.
+<MLE_BN.png, id=59, 1094.0875pt x 983.675pt>
+File: MLE_BN.png Graphic file (type png)
+<use MLE_BN.png>
+Package pdftex.def Info: MLE_BN.png  used on input line 93.
+(pdftex.def)             Requested size: 298.11374pt x 268.02736pt.
 
 
 LaTeX Warning: `h' float specifier changed to `ht'.
@@ -589,17 +589,17 @@ LaTeX Warning: `h' float specifier changed to `ht'.
 
 [2]
 
-[3 <./EM_BN.png>]
-
-[4]
-<MLE_BN.png, id=87, 1094.0875pt x 983.675pt>
-File: MLE_BN.png Graphic file (type png)
-<use MLE_BN.png>
-Package pdftex.def Info: MLE_BN.png  used on input line 231.
-(pdftex.def)             Requested size: 298.11374pt x 268.02736pt.
+[3 <./MLE_BN.png>]
+<EM_BN.png, id=81, 1023.825pt x 915.42pt>
+File: EM_BN.png Graphic file (type png)
+<use EM_BN.png>
+Package pdftex.def Info: EM_BN.png  used on input line 126.
+(pdftex.def)             Requested size: 298.11374pt x 266.54054pt.
 
 
-[5 <./MLE_BN.png>]
+[4 <./EM_BN.png>]
+
+[5]
 Package microtype Info: Loading generic protrusion settings for font family
 (microtype)             `cmtt' (encoding: T1).
 (microtype)             For optimal results, create family-specific settings.
@@ -663,16 +663,16 @@ L3 programming layer <2025-01-18>
 LaTeX Warning: There were multiply-defined labels.
 
 Package rerunfilecheck Info: File `neurips_2024.out' has not changed.
-(rerunfilecheck)             Checksum: EF62DB1EAEED0AFF1E63DD3622EB7EA9;2738.
+(rerunfilecheck)             Checksum: 9A2714C1BF63F8F527181BC28E1C51BD;2738.
  ) 
 Here is how much of TeX's memory you used:
- 13301 strings out of 473190
- 207495 string characters out of 5715801
- 651650 words of memory out of 5000000
+ 13298 strings out of 473190
+ 207465 string characters out of 5715801
+ 651654 words of memory out of 5000000
  36198 multiletter control sequences out of 15000+600000
- 587537 words of font info for 153 fonts, out of 8000000 for 9000
+ 587407 words of font info for 151 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,8n,79p,1190b,527s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 75i,8n,79p,1154b,527s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb
 ></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb>
 </usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi5.pfb></
@@ -686,7 +686,7 @@ live/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/local/texli
 ve/2025/texmf-dist/fonts/type1/public/cm-super/sftt1000.pfb></usr/local/texlive
 /2025/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2025/texm
 f-dist/fonts/type1/urw/times/utmr8a.pfb>
-Output written on neurips_2024.pdf (7 pages, 485576 bytes).
+Output written on neurips_2024.pdf (7 pages, 485615 bytes).
 PDF statistics:
  193 PDF objects out of 1000 (max. 8388607)
  152 compressed objects within 2 object streams
