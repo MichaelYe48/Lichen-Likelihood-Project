@@ -128,15 +128,14 @@ element_list = [
     'phosphorous',
     'lead',
     'copper',
-    'chromium',
-    'air pollution score'
+    'chromium'
     #'potassium', 'manganese'
 ]
 
 #Other nodes
 num_list = [
     'Year of tissue collection',
-    #'Air pollution score'
+    'Air pollution score'
 ]
 notNum_list = [
     'Region',
@@ -161,7 +160,7 @@ for n in elementNames+num_list:
     elementIntervals.append(intervals)
 # Bin other nodes
 df_mod = binYearNode(num_list[0],df_mod)
-#df_mod = binAirPollutionNode(num_list[1],df_mod)
+df_mod = binAirPollutionNode(num_list[1],df_mod)
 df_mod = binRegionNode(notNum_list[0],df_mod)
 df_mod = binSpeciesNode(notNum_list[1],df_mod)
 

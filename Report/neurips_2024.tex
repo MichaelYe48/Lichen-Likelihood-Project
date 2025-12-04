@@ -159,6 +159,17 @@ The equations for Pollution $P(Pe \mid R, F)$, Lichen Species $P(Sp \mid F, Pe)$
 
 
 
+For inference we start with the joint equation where $T_i$ denotes each pollutant found in the tissue samples
+(e.g. nitrogenm, sulfur, phosphorus, lead, copper, chromium):
+\[
+P(R, F, Pe, Sp, T) = P(R)P(F)P(Pe|R,F)P(Sp|R, F, Pe)\sum_iP(T_i|Sp, Pe)
+\]
+
+We are looking to infer the pollution level given the lichen species, tissue composition, region, and field collection date. Thus we have
+\[
+P(Pe | T, R, F, Sp)= \frac{P(Pe, T, R, F, Sp)}{P(T, R, F, Sp)}\]
+\[= \frac{P(R)P(F)P(Pe|R,F)P(Sp|R, F, Pe)\sum_iP(T_i|Sp, Pe)}{\sum_{pe'}P(R)P(F)P(pe'|R,F)P(Sp|R, F, pe')\sum_iP(T_i|Sp, pe')}\]
+\[= \frac{P(Pe|R,F)P(Sp|R, F, Pe)\sum_iP(T_i|Sp, Pe)}{\sum_{pe'}P(pe'|R,F)P(Sp|R, F, pe')\sum_iP(T_i|Sp, pe')}\]
 \subsection{Bayesian Network with Hidden Node}
 
 The rationale for introducing a hidden node to model hidden spatiotemporal aspects of the environment is twofold: firstly, despite the wealth of columns in the data about the environment in which the lichen were found in (region, elevation, etc.), there still could be some aspects of the environment not directly captured or observed in the dataset, such as microclimate. Addressing these in a hidden node will allow for the model to be more robust in its modeling of the relationship between lichen, their environment, and pollutants by acting as a latent variable that captures these other hidden aspects. Consequently, this model assumes that the effect of the temporal aspects of the environment on other nodes in the graph can be approximated by this hidden node. Secondly, some data in the dataset itself is lacking. The EM algorithm in conjunction with the hidden node structure handles incomplete data by inferring missing values in the E-step. This contrasts with case deletion or imputation that could introduce bias.
@@ -255,6 +266,10 @@ The E and M steps are repeated in turn for every value of every node until the l
 \section{Results and Discussion}
 
 We explored two different belief networks for this project, one with and one without a hidden node representing unobserved temporal qualities of the environment. These networks required us to use the Maximum Likelihood Estimate and Expectation Maximization algorithms. As a result, our choice of configurations are limited since adjusting configurations for the MLE model would require shifting away from the network structure we believe is ideal for capturing the node relationships of our dataset. Similarly, beyond changing the network structure for the EM model, we are limited to only adjusting the initialization values of our model.
+To help evaluate our MLE model, we used a baseline model that predicts the pollution level based on the region and field collection date using MLE.
+For our MLE model which uses all the nodes, our model achieved an accuracy of 35.6\% compared to the baseline accuracy of 52.5\%.
+One insight we stumbled upon when fixing the dataset was that lobsided distributions of pollution levels led to high model accuracy. Specifically, our pollution levels were orginally 
+binned according to thresholds we found on the dataset website not by percentile. As a result, predicting the most common pollution level yieled relatively high baseline results.
 
 \section{Conclusion}
 
