@@ -159,6 +159,17 @@ The equations for Pollution $P(Pe \mid R, F)$, Lichen Species $P(Sp \mid F, Pe)$
 
 
 
+For inference we start with the joint equation where $T_i$ denotes each pollutant found in the tissue samples
+(e.g. nitrogenm, sulfur, phosphorus, lead, copper, chromium):
+\[
+P(R, F, Pe, Sp, T) = P(R)P(F)P(Pe|R,F)P(Sp|R, F, Pe)\sum_iP(T_i|Sp, Pe)
+\]
+
+We are looking to infer the pollution level given the lichen species, tissue composition, region, and field collection date. Thus we have
+\[
+P(Pe | T, R, F, Sp)= \frac{P(Pe, T, R, F, Sp)}{P(T, R, F, Sp)}\]
+\[= \frac{P(R)P(F)P(Pe|R,F)P(Sp|R, F, Pe)\sum_iP(T_i|Sp, Pe)}{\sum_{pe'}P(R)P(F)P(pe'|R,F)P(Sp|R, F, pe')\sum_iP(T_i|Sp, pe')}\]
+\[= \frac{P(Pe|R,F)P(Sp|R, F, Pe)\sum_iP(T_i|Sp, Pe)}{\sum_{pe'}P(pe'|R,F)P(Sp|R, F, pe')\sum_iP(T_i|Sp, pe')}\]
 \subsection{Bayesian Network with Hidden Node}
 
 The rationale for introducing a hidden node to model hidden spatiotemporal aspects of the environment is twofold: firstly, despite the wealth of columns in the data about the environment in which the lichen were found in (region, elevation, etc.), there still could be some aspects of the environment not directly captured or observed in the dataset, such as microclimate. Addressing these in a hidden node will allow for the model to be more robust in its modeling of the relationship between lichen, their environment, and pollutants by acting as a latent variable that captures these other hidden aspects. Consequently, this model assumes that the effect of the temporal aspects of the environment on other nodes in the graph can be approximated by this hidden node. Secondly, some data in the dataset itself is lacking. The EM algorithm in conjunction with the hidden node structure handles incomplete data by inferring missing values in the E-step. This contrasts with case deletion or imputation that could introduce bias.
@@ -255,7 +266,14 @@ The E and M steps are repeated in turn for every value of every node until the l
 \section{Results and Discussion}
 
 We explored two different belief networks for this project, one with and one without a hidden node representing unobserved temporal qualities of the environment. These networks required us to use the Maximum Likelihood Estimate and Expectation Maximization algorithms. As a result, our choice of configurations are limited since adjusting configurations for the MLE model would require shifting away from the network structure we believe is ideal for capturing the node relationships of our dataset. Similarly, beyond changing the network structure for the EM model, we are limited to only adjusting the initialization values of our model.
+To help evaluate our MLE model, we used a baseline model that predicts the pollution level based on the region and field collection date using MLE.
+For our MLE model which uses all the nodes, our model achieved an accuracy of 35.6\% compared to the baseline accuracy of 52.5\%.
+One insight we stumbled upon when fixing the dataset was that lobsided distributions of pollution levels led to high model accuracy. Specifically, our pollution levels were orginally 
+binned according to thresholds we found on the dataset website not by percentile. As a result, predicting the most common pollution level yieled relatively high baseline results.
 
+For evaluating our EM implementation, we relied on accuracy score of predictions on our test set(which is 20\% of our dataset). For reference, we calculate our predictions by taking our discretized air pollution score buckets and selecting the one that has the highest probability given the rest of our data using the CPTs of our model. Then, we can calculate the accuracy of our model on the test set by taking all of our predictions for each data point and determining the ratio of number of correct predictions to total number of samples. During training time, we also track the log-likelihood of our data in order to verify that we are learning. \newline
+Overall, our EM model appears to perform significantly better than our implementation of Maximum Likelihood Estimation. We can see that we are able to achieve peak accuracy scores of around {\textbf{72.4\%}}, and it seems that trying different numbers of iterations: \{25, 50, 100, 200, 300\} did not improve our prediction accuracy any more than what we achieved at 200 iterations. We can also see that our log-likelihood appears to plateau as we increase the number of iterations, indicating that we are close to convergence. We also attempted to vary the number of buckets for hidden nodes that we had in our belief network. Setting the number of hidden nodes from 2 to any of \{3, 5\} did not result in an increase in accuracy. Increasing the number of hidden nodes to 3 yielded an accuracy score of 57.5\% and increasing to 5 nodes yielded a higher accuracy score of 70.8\% which was still less than what we achieved with 2 hidden nodes.\newline
+\includegraphics[width=0.25\textwidth]{log_likelihood_curve.png}
 \section{Conclusion}
 
 We faced several limitations when developing our models. While we strove to simulate a scientifically accurate belief network using nodes derived from the data columns of our source, there were instances where we were unsure how to incorporate certain nodes like abundance. Furthermore, we were unable to use every column from the dataset due to sparsity and bad distribution. We had originally intended to employ far more parent nodes that capture environmental aspects like precipitation, elevation, and more, but we were limited by how sparse they were in the dataset and ultimately chose to not include them.
@@ -263,7 +281,15 @@ Potential extensions for our work would include building a more extensive belief
 
 \section{Reflections \& Contributions}
 
-Blank
+Member contributions were as follows:\newline
+Tanishq: I worked on drafting the equations for the inference and updates for our CPTs using EM, implementing EM on our cleaned dataset, implementing log likelihood as a method of evaluation, and testing/evaluating the EM model. Through the process, I gained a much stronger understanding of how and where EM can be applied and gained experience in the process of translating belief network structure and CPT equations into code. \newline\
+Michael: I worked on the Maximum Likelihood Estimate algorithm, specifically the inference for the bayesian network and the evaluation functions. On the report, I wrote the parts for the MLE 
+inference and the results pertaining to MLE. I learned a lot from the project, from the subject material regarding lichen and the different environmental impacts of pollutants. Additionally, I got the opportunity to help create a belief network (and implement it in code) that models a real-world model with tangible applications as measuring air pollution is a relevant problem for today. 
+\newline
+Grant: I worked on the data discretization, formulating the model section of the paper, and MLE implementation, primarily formulating the equations and implementing the counts and CPTs. I learned overall how to apply the concept of MLE to real-world datasets and implement it into code.\newline
+Himanth: I worked on the data analyzation and processing, and I was also in charge of creating the Latex files for the first two milestones. I learned about how hard it is to work with a real world database in comparison to ones made specifically for homework.
+\newline
+Siena: I worked on drafting the EM equations, modeling both BNs, filtering and binning the dataset, and implementing the naive predictor. I learned a lot in terms of how to appropriately model a real-world system and how to work with messy data.\newline
 
 \section*{References}
 
