@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.3.8)  8 DEC 2025 15:12
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.3.8)  8 DEC 2025 17:54
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -587,123 +587,119 @@ Package hyperref Warning: Difference (2) between bookmark levels is greater
 
 
 [2]
-<MLE_BN.png, id=86, 1001.7425pt x 899.36pt>
-File: MLE_BN.png Graphic file (type png)
-<use MLE_BN.png>
-Package pdftex.def Info: MLE_BN.png  used on input line 113.
-(pdftex.def)             Requested size: 298.11374pt x 267.64183pt.
 
+[3]
+Underfull \hbox (badness 10000) in paragraph at lines 226--227
 
-[3 <./MLE_BN.png>]
-<EM_BN.png, id=94, 975.645pt x 883.3pt>
-File: EM_BN.png Graphic file (type png)
-<use EM_BN.png>
-Package pdftex.def Info: EM_BN.png  used on input line 180.
-(pdftex.def)             Requested size: 298.11374pt x 269.89806pt.
-
-
-LaTeX Warning: `h' float specifier changed to `ht'.
+ []
 
 
 
 [4]
-Underfull \vbox (badness 5022) has occurred while \output is active []
+Underfull \hbox (badness 10000) in paragraph at lines 231--232
+
+ []
 
 
+Underfull \hbox (badness 10000) in paragraph at lines 236--237
 
-[5 <./EM_BN.png>]
+ []
+
+
 Underfull \hbox (badness 10000) in paragraph at lines 241--242
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 246--247
+
+[5]
+Underfull \hbox (badness 10000) in paragraph at lines 276--285
 
  []
 
-
-Underfull \hbox (badness 10000) in paragraph at lines 251--252
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 256--257
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 274--276
-
- []
-
-
-
-[6]
-<log_likelihood_curve.png, id=114, 523.9575pt x 338.9463pt>
-File: log_likelihood_curve.png Graphic file (type png)
-<use log_likelihood_curve.png>
-Package pdftex.def Info: log_likelihood_curve.png  used on input line 296.
-(pdftex.def)             Requested size: 99.37125pt x 64.28151pt.
-
-Underfull \hbox (badness 10000) in paragraph at lines 304--313
-
- []
-
-
-
-[7 <./log_likelihood_curve.png>]
 Package microtype Info: Loading generic protrusion settings for font family
 (microtype)             `cmtt' (encoding: T1).
 (microtype)             For optimal results, create family-specific settings.
 (microtype)             See the microtype manual for details.
 
-Underfull \hbox (badness 10000) in paragraph at lines 316--317
+Underfull \hbox (badness 10000) in paragraph at lines 288--289
 \T1/ptm/m/n/10 (+20) [1] []$\T1/cmtt/m/n/10 https : / / www . nzdr . ru / data 
 / media / biblio / kolxoz / P / PGp / Hill % 20M . K .
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 316--317
+Underfull \hbox (badness 10000) in paragraph at lines 288--289
 \T1/cmtt/m/n/10 %20Understanding % 20Environmental % 20Pollution % 20(draft ,[]
  %203ed . ,[] % 20CUP ,[]
  []
 
 
-Overfull \hbox (66.0574pt too wide) in paragraph at lines 318--319
+Overfull \hbox (66.0574pt too wide) in paragraph at lines 290--291
 []\T1/ptm/m/n/10 (-20) [2] []$\T1/cmtt/m/n/10 https : / / www . envchemgroup . 
 com / understanding-[]environmental-[]pollution-[]element-[]by-[]element .
  []
 
 
-Overfull \hbox (251.16306pt too wide) in paragraph at lines 320--321
+Overfull \hbox (251.16306pt too wide) in paragraph at lines 292--293
 []\T1/ptm/m/n/10 (-20) [3] []$\T1/cmtt/m/n/10 https : / / www . researchgate . 
 net / figure / Periodic-[]table-[]of-[]environmental-[]impacts-[]colored-[]acco
 rding-[]to-[]the-[]color-[]ramp-[]above-[]A _
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 326--327
+
+[6{/usr/local/texlive/2025/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc}
+]
+Underfull \hbox (badness 10000) in paragraph at lines 298--299
 []\T1/ptm/m/n/10 (+20) [6] []$\T1/cmtt/m/n/10 https : / / internationalcopper .
  org / sustainable-[]copper / about-[]copper /
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 336--337
+Underfull \hbox (badness 10000) in paragraph at lines 308--309
 []\T1/ptm/m/n/10 (+20) [11] []$\T1/cmtt/m/n/10 https : / / www . nature . com /
  scitable / knowledge / library /
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 342--343
+Underfull \hbox (badness 10000) in paragraph at lines 314--315
 []\T1/ptm/m/n/10 (+20) [14] []$\T1/cmtt/m/n/10 https : / / oceanservice . noaa 
 . gov / education / tutorial _ pollution / 02history .
  []
 
-No file neurips_2024.bbl.
 
 
-[8{/usr/local/texlive/2025/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc}
-] (./neurips_2024.aux)
+[7]
+<MLE_BN.png, id=173, 1001.7425pt x 899.36pt>
+File: MLE_BN.png Graphic file (type png)
+<use MLE_BN.png>
+Package pdftex.def Info: MLE_BN.png  used on input line 330.
+(pdftex.def)             Requested size: 298.11374pt x 267.64183pt.
+<EM_BN.png, id=175, 975.645pt x 883.3pt>
+File: EM_BN.png Graphic file (type png)
+<use EM_BN.png>
+Package pdftex.def Info: EM_BN.png  used on input line 339.
+(pdftex.def)             Requested size: 298.11374pt x 269.89806pt.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 344.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 344.
+
+
+
+[8 <./MLE_BN.png> <./EM_BN.png>]
+<log_likelihood_curve.png, id=182, 523.9575pt x 338.9463pt>
+File: log_likelihood_curve.png Graphic file (type png)
+<use log_likelihood_curve.png>
+Package pdftex.def Info: log_likelihood_curve.png  used on input line 365.
+(pdftex.def)             Requested size: 298.11374pt x 192.85489pt.
+
+
+[9 <./log_likelihood_curve.png>] (./neurips_2024.aux)
  ***********
 LaTeX2e <2024-11-01> patch level 2
 L3 programming layer <2025-01-18>
@@ -713,31 +709,32 @@ L3 programming layer <2025-01-18>
 LaTeX Warning: There were multiply-defined labels.
 
 Package rerunfilecheck Info: File `neurips_2024.out' has not changed.
-(rerunfilecheck)             Checksum: 826EC6BFC943039A2996988622E95B14;4126.
+(rerunfilecheck)             Checksum: 4707DC017E1290D1B0C57EF5715C489F;6329.
  ) 
 Here is how much of TeX's memory you used:
- 13314 strings out of 473190
- 207903 string characters out of 5715801
- 652673 words of memory out of 5000000
- 36211 multiletter control sequences out of 15000+600000
- 584123 words of font info for 149 fonts, out of 8000000 for 9000
+ 13376 strings out of 473190
+ 208770 string characters out of 5715801
+ 651817 words of memory out of 5000000
+ 36254 multiletter control sequences out of 15000+600000
+ 588898 words of font info for 169 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,11n,79p,1218b,527s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 75i,11n,79p,1235b,527s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb
 ></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb>
-</usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></
-usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></us
-r/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/l
-ocal/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/lo
-cal/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy5.pfb></usr/loca
-l/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/local/
-texlive/2025/texmf-dist/fonts/type1/public/cm-super/sftt1000.pfb></usr/local/te
-xlive/2025/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2025
-/texmf-dist/fonts/type1/urw/times/utmr8a.pfb>
-Output written on neurips_2024.pdf (8 pages, 544296 bytes).
+</usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb><
+/usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></u
+sr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr
+/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/lo
+cal/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/loc
+al/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy5.pfb></usr/local
+/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/local/t
+exlive/2025/texmf-dist/fonts/type1/public/cm-super/sftt1000.pfb></usr/local/tex
+live/2025/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2025/
+texmf-dist/fonts/type1/urw/times/utmr8a.pfb>
+Output written on neurips_2024.pdf (9 pages, 554015 bytes).
 PDF statistics:
- 208 PDF objects out of 1000 (max. 8388607)
- 168 compressed objects within 2 object streams
- 30 named destinations out of 1000 (max. 500000)
- 28824 words of extra memory for PDF output out of 29859 (max. 10000000)
+ 255 PDF objects out of 1000 (max. 8388607)
+ 211 compressed objects within 3 object streams
+ 37 named destinations out of 1000 (max. 500000)
+ 30432 words of extra memory for PDF output out of 35830 (max. 10000000)
 
