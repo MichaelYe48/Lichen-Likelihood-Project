@@ -17,6 +17,8 @@
 \usepackage{amsmath}
 \usepackage{graphicx}
 \usepackage{placeins}
+\usepackage{array}
+\usepackage{makecell}
 
 %extra subsection layer - \paragraph{<title>}
 \makeatletter
@@ -71,24 +73,57 @@ Our data comes from U.S. Forest Service (USFS) lichen biomonitoring programs, ac
     \item Lichen community data at many field plots (which species were present, abundance, etc.).
     \item Lichen tissue chemistry for selected samples (element concentrations for metals and nutrients like copper, nitrogen, sulfur, etc.).
     \item Environmental variables for each sample or plot (region, elevation, slope, approximate collection date, and precipitation where available).
-    \item Air pollution scores or categories derived by USFS from lichen community composition.
+    \item Air pollution scores derived by USFS based on effects on lichen populations.
 \end{itemize}
 
-We also use external reference sources (USFS documentation, lichen and pollution literature, and plant/lichen species lists) to interpret and standardize species names and to choose meaningful thresholds for pollution and environmental buckets.
+We used external reference sources (USFS documentation, lichen and pollution literature, bio-indicator literature) to inform our selection of a subset of this data with which to perform analysis.
 
-At a broad level, we did two main kinds of preprocessing:
+At a broad level, we did three main kinds of preprocessing:
 
-\paragraph{Cleaning and standardizing lichen species information}
+\paragraph{Removing missing data entries}
 
-Parse and normalize scientific names from reference tables so that each species/taxon has a consistent identifier across all files. Join those standardized names back to the lichen plot and tissue chemistry data so that species-level patterns can be analyzed reliably.
+Once we defined  what data was to be used to build our model(s), sample entries that did not contain a complete instantiation for all nodes were removed. This reduced our training data from around 13,000 to a little under 8000, though it is important to note that some sample entries were extremely limited in what data was recorded.
+
+\paragraph{Standardizing lichen species information}
+
+The scientific names from reference tables were parsed and standardized so that each species/taxon has a consistent identifier across all files. Then the standardized names were linked back to the element analysis data so that species-level patterns could be reliably analyzed. To ensure we had enough training data per species, species with under 500 samples were grouped into one species category.
 
 \paragraph{Discretizing continuous variables into Bayesian Network–friendly categories}
 
-Air pollution score is converted into a categorical pollution level (e.g., low/medium/high) using USFS-based thresholds. Continuous environmental variables like collection date are binned into a small number of buckets (e.g., “before 1995") using domain-informed breakpoints. Tissue element concentrations (e.g., copper or nitrogen in lichen tissue) are also bucketed (e.g., “background / elevated / high”) to make conditional probability tables tractable.
+Since the network structure and CPTs are defined over a finite number of discrete states, all continuous variables were converted into categorical values. Due to the relatively small amount of data, air pollution score and tissue element concentrations were split into three categories (low, medium, high) based on percentiles with $\frac{1}{3}$ of the data categorized into each label. The year a sample was collected was also split into three groups, while region relied on previously defined regions given in the original data.
 
-These steps are crucial because: If species names are inconsistent or misaligned across tables, we’d mix different taxa and distort the relationship between lichen communities, tissue chemistry, and pollution. Standardizing and joining species information ensures that when the model learns “this species tends to occur at high nitrogen sites” or “this tissue concentration pattern is associated with metal pollution,” it’s actually talking about the same organism. The network structure and CPTs are defined over finite states, so we must discretize continuous features (pollution scores, elevation, tissue concentrations, etc.) into meaningful categories. Doing this with USFS thresholds and literature-based breakpoints keeps the categories ecologically interpretable (e.g., what counts as “high” copper or “high” pollution from a lichen-bioindicator perspective).
-
-\color{red}I’ll show the exact dataset information on Piazza, when I have time to write it up.\color{black}
+\newpage
+\begin{table}[h!]
+    \centering
+    \caption{Variable discretization and categorization}
+    \label{tab:data_dictionary}
+    % m{width}
+    \begin{tabular}{| m{3cm} | m{3.5cm} | m{7cm} |}
+        \hline
+        \textbf{Name} & \textbf{Label} & \textbf{Description} \\
+        \hline
+        Region & \makecell[l]{1-4, 5, 6, 7, 8-9, 10} & Locations for a sample are split into 10 regions across the US. The amount of a given element naturally available varies across regions. \\
+        \hline
+        Field Collection Date & \makecell[l]{Before 1995\\1995-2005\\2005 to present} & Pollution levels can change over time within an area from events like the passage of environmental protection laws or the opening of a mining operation nearby.\\
+        \hline
+        Air pollution score & \makecell[l]{Low ($<^-0.46$)\\Medium($^-0.46- ^-0.14$)\\High ($> -0.139$)} & This is a categorized score of ambient air quality, often based on proximity to major industrial or traffic sources. The lower bound of the "High" category roughly corresponds to USFS's threshold for if an area is affected by pollution (-0.11 and above). The split between "Low" and "Medium" categories does not directly correspond to a USFS pollution threshold, but can be thought of as "Excellent" and "Good", respectively.\\
+        \hline
+        Lichen Species & \makecell[l]{Alectoria sarmentosa\\Flavoparmelia caperata\\Hypogymnia inactiva\\Letharia vulpina\\Platismatia glauca\\Other} & Lichen species can react very differently to different amounts of specific pollutants in the environment. By including this category, some of these relationships may be accounted for.\\
+        \hline
+        Tissue Composition: Nitrogen & \makecell[l]{Low ($<0.472$)\\Medium ($0.472-0.72$)\\High ($>0.72$)} & Nitrogen is a naturally found element that is essential to life. However, human usage of synthetic fertilizers and fossil fuels generate harmful nitrogen oxides (smog/greenhouse gasses).\\
+        \hline
+        Tissue Composition: Sulfur & \makecell[l]{Low ($<0.048$)\\Medium ($0.048-0.071$)\\High ($>0.071$)} & While beneficial in limited qualities, large amounts introduced to the environment through burning coal and heavy oil can lead to acid rain.\\
+        \hline
+        Tissue Composition: Phosphorus & \makecell[l]{Low ($<639.16$)\\Medium ($639.16-928$)\\High ($>928$)} & Phosphorus is found in commercial fertilizers. It is known to cause effects such as limited plant growth in freshwater lakes and deformities in frogs.\\
+        \hline
+        Tissue Composition: Lead & \makecell[l]{Low ($<2.86$)\\Medium ($2.86 - 3.739$)\\High ($>3.739$)} & Lead (and lead compounds) are among the greatest carcinogenic hazards to human health. Lead is exposed in mining operations or from leaded paint.\\
+        \hline
+        Tissue Composition: Copper & \makecell[l]{Low ($<2.17$)\\Medium($2.17 - 4.535$)\\High ($>4.535$)} & Copper is a naturally occurring heavy metal that is essential to life but toxic in high quantities. Only a small amount of copper in an environment is typically bio-available, which means directly observing the environmental levels is not an accurate measure of its effects. Copper can accumulate due to mining, fertilizer, manufacturing, etc.\\
+        \hline
+        Tissue Composition: Chromium & \makecell[l]{Low ($<.6$)\\Medium ($0.6-1.19$)\\High ($>1.19$)} & This trace element is one of the most toxic heavy metals. While the naturally occurring form is essential to life, even small amounts of Cr produced through industrial processes has extremely detrimental effects.\\
+        \hline
+    \end{tabular}
+\end{table}
 
 \section{Modeling and Inference}
 
