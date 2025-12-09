@@ -90,7 +90,9 @@ The scientific names from reference tables were parsed and standardized so that 
 
 \paragraph{Discretizing continuous variables into Bayesian Network–friendly categories}
 
-Since the network structure and CPTs are defined over a finite number of discrete states, all continuous variables were converted into categorical values. Due to the relatively small amount of data, air pollution score and tissue element concentrations were split into three categories (low, medium, high) based on percentiles with $\frac{1}{3}$ of the data categorized into each label. The year a sample was collected was also split into three groups, while region relied on previously defined regions given in the original data.
+Since the network structure and CPTs are defined over a finite number of discrete states, all continuous variables were converted into categorical values. Tissue element concentrations were split into three categories (low, medium, high) based on percentiles, with $\frac{1}{3}$ of the data categorized into each label. The year a sample was collected was also split into three groups, while region relied on previously defined regions given in the original data.
+
+While the original intention for discretizing air pollution score was to follow the USFS threshold values for 5 categories of air pollution, the dataset is not distributed equally between these categories and failed to learn the relationships between variables. Instead, air pollution scores were also binned by percentile into the categories of low, medium, and high. The lower bound of the "high" category roughly corresponds to USFS's threshold for if an area is affected by pollution (-0.11 and above). The split between "low" and "medium" categories does not directly correspond to a USFS pollution threshold, but can be thought of as "excellent" and "good", respectively.
 
 \newpage
 \begin{table}[h!]
@@ -100,13 +102,13 @@ Since the network structure and CPTs are defined over a finite number of discret
     % m{width}
     \begin{tabular}{| m{3cm} | m{3.5cm} | m{7cm} |}
         \hline
-        \textbf{Name} & \textbf{Label} & \textbf{Description} \\
+        \textbf{Name} & \textbf{Label} & \textbf{Justification for inclusion} \\
         \hline
         Region & \makecell[l]{1-4, 5, 6, 7, 8-9, 10} & Locations for a sample are split into 10 regions across the US. The amount of a given element naturally available varies across regions. \\
         \hline
         Field Collection Date & \makecell[l]{Before 1995\\1995-2005\\2005 to present} & Pollution levels can change over time within an area from events like the passage of environmental protection laws or the opening of a mining operation nearby.\\
         \hline
-        Air pollution score & \makecell[l]{Low ($<^-0.46$)\\Medium($^-0.46- ^-0.14$)\\High ($> -0.139$)} & This is a categorized score of ambient air quality, often based on proximity to major industrial or traffic sources. The lower bound of the "High" category roughly corresponds to USFS's threshold for if an area is affected by pollution (-0.11 and above). The split between "Low" and "Medium" categories does not directly correspond to a USFS pollution threshold, but can be thought of as "Excellent" and "Good", respectively.\\
+        Air pollution score & \makecell[l]{Low ($<^-0.46$)\\Medium($^-0.46- ^-0.14$)\\High ($> -0.139$)} & This is a categorized score of ambient air quality, often determined by proximity to major industrial or traffic sources. This is our query node.\\
         \hline
         Lichen Species & \makecell[l]{Alectoria sarmentosa\\Flavoparmelia caperata\\Hypogymnia inactiva\\Letharia vulpina\\Platismatia glauca\\Other} & Lichen species can react very differently to different amounts of specific pollutants in the environment. By including this category, some of these relationships may be accounted for.\\
         \hline
