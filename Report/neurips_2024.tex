@@ -17,6 +17,8 @@
 \usepackage{amsmath}
 \usepackage{graphicx}
 \usepackage{placeins}
+\usepackage{array}
+\usepackage{makecell}
 
 %extra subsection layer - \paragraph{<title>}
 \makeatletter
@@ -71,24 +73,59 @@ Our data comes from U.S. Forest Service (USFS) lichen biomonitoring programs, ac
     \item Lichen community data at many field plots (which species were present, abundance, etc.).
     \item Lichen tissue chemistry for selected samples (element concentrations for metals and nutrients like copper, nitrogen, sulfur, etc.).
     \item Environmental variables for each sample or plot (region, elevation, slope, approximate collection date, and precipitation where available).
-    \item Air pollution scores or categories derived by USFS from lichen community composition.
+    \item Air pollution scores derived by USFS based on effects on lichen populations.
 \end{itemize}
 
-We also use external reference sources (USFS documentation, lichen and pollution literature, and plant/lichen species lists) to interpret and standardize species names and to choose meaningful thresholds for pollution and environmental buckets.
+We used external reference sources (USFS documentation, lichen and pollution literature, bio-indicator literature) to inform our selection of a subset of this data with which to perform analysis.
 
-At a broad level, we did two main kinds of preprocessing:
+At a broad level, we did three main kinds of preprocessing:
 
-\paragraph{Cleaning and standardizing lichen species information}
+\paragraph{Removing missing data entries}
 
-Parse and normalize scientific names from reference tables so that each species/taxon has a consistent identifier across all files. Join those standardized names back to the lichen plot and tissue chemistry data so that species-level patterns can be analyzed reliably.
+Once we defined  what data was to be used to build our model(s), sample entries that did not contain a complete instantiation for all nodes were removed. This reduced our training data from around 13,000 to a little under 8000, though it is important to note that some sample entries were extremely limited in what data was recorded.
+
+\paragraph{Standardizing lichen species information}
+
+The scientific names from reference tables were parsed and standardized so that each species/taxon has a consistent identifier across all files. Then the standardized names were linked back to the element analysis data so that species-level patterns could be reliably analyzed. To ensure we had enough training data per species, species with under 500 samples were grouped into one species category.
 
 \paragraph{Discretizing continuous variables into Bayesian Network–friendly categories}
 
-Air pollution score is converted into a categorical pollution level (e.g., low/medium/high) using USFS-based thresholds. Continuous environmental variables like collection date are binned into a small number of buckets (e.g., “before 1995") using domain-informed breakpoints. Tissue element concentrations (e.g., copper or nitrogen in lichen tissue) are also bucketed (e.g., “background / elevated / high”) to make conditional probability tables tractable.
+Since the network structure and CPTs are defined over a finite number of discrete states, all continuous variables were converted into categorical values. Tissue element concentrations were split into three categories (low, medium, high) based on percentiles, with $\frac{1}{3}$ of the data categorized into each label. The year a sample was collected was also split into three groups, while region relied on previously defined regions given in the original data.
 
-These steps are crucial because: If species names are inconsistent or misaligned across tables, we’d mix different taxa and distort the relationship between lichen communities, tissue chemistry, and pollution. Standardizing and joining species information ensures that when the model learns “this species tends to occur at high nitrogen sites” or “this tissue concentration pattern is associated with metal pollution,” it’s actually talking about the same organism. The network structure and CPTs are defined over finite states, so we must discretize continuous features (pollution scores, elevation, tissue concentrations, etc.) into meaningful categories. Doing this with USFS thresholds and literature-based breakpoints keeps the categories ecologically interpretable (e.g., what counts as “high” copper or “high” pollution from a lichen-bioindicator perspective).
+While the original intention for discretizing air pollution score was to follow the USFS threshold values for 5 categories of air pollution, the dataset is not distributed equally between these categories and failed to learn the relationships between variables. Instead, air pollution scores were also binned by percentile into the categories of low, medium, and high. The lower bound of the "high" category roughly corresponds to USFS's threshold for if an area is affected by pollution (-0.11 and above). The split between "low" and "medium" categories does not directly correspond to a USFS pollution threshold, but can be thought of as "excellent" and "good", respectively.
 
-\color{red}I’ll show the exact dataset information on Piazza, when I have time to write it up.\color{black}
+\newpage
+\begin{table}[h!]
+    \centering
+    \caption{Variable discretization and categorization}
+    \label{tab:data_dictionary}
+    % m{width}
+    \begin{tabular}{| m{3cm} | m{3.5cm} | m{7cm} |}
+        \hline
+        \textbf{Name} & \textbf{Label} & \textbf{Justification for inclusion} \\
+        \hline
+        Region & \makecell[l]{1-4, 5, 6, 7, 8-9, 10} & Locations for a sample are split into 10 regions across the US. The amount of a given element naturally available varies across regions. \\
+        \hline
+        Field Collection Date & \makecell[l]{Before 1995\\1995-2005\\2005 to present} & Pollution levels can change over time within an area from events like the passage of environmental protection laws or the opening of a mining operation nearby.\\
+        \hline
+        Air pollution score & \makecell[l]{Low ($<^-0.46$)\\Medium($^-0.46- ^-0.14$)\\High ($> -0.139$)} & This is a categorized score of ambient air quality, often determined by proximity to major industrial or traffic sources. This is our query node.\\
+        \hline
+        Lichen Species & \makecell[l]{Alectoria sarmentosa\\Flavoparmelia caperata\\Hypogymnia inactiva\\Letharia vulpina\\Platismatia glauca\\Other} & Lichen species can react very differently to different amounts of specific pollutants in the environment. By including this category, some of these relationships may be accounted for.\\
+        \hline
+        Tissue Composition: Nitrogen & \makecell[l]{Low ($<0.472$)\\Medium ($0.472-0.72$)\\High ($>0.72$)} & Nitrogen is a naturally found element that is essential to life. However, human usage of synthetic fertilizers and fossil fuels generate harmful nitrogen oxides (smog/greenhouse gasses).\\
+        \hline
+        Tissue Composition: Sulfur & \makecell[l]{Low ($<0.048$)\\Medium ($0.048-0.071$)\\High ($>0.071$)} & While beneficial in limited qualities, large amounts introduced to the environment through burning coal and heavy oil can lead to acid rain.\\
+        \hline
+        Tissue Composition: Phosphorus & \makecell[l]{Low ($<639.16$)\\Medium ($639.16-928$)\\High ($>928$)} & Phosphorus is found in commercial fertilizers. It is known to cause effects such as limited plant growth in freshwater lakes and deformities in frogs.\\
+        \hline
+        Tissue Composition: Lead & \makecell[l]{Low ($<2.86$)\\Medium ($2.86 - 3.739$)\\High ($>3.739$)} & Lead (and lead compounds) are among the greatest carcinogenic hazards to human health. Lead is exposed in mining operations or from leaded paint.\\
+        \hline
+        Tissue Composition: Copper & \makecell[l]{Low ($<2.17$)\\Medium($2.17 - 4.535$)\\High ($>4.535$)} & Copper is a naturally occurring heavy metal that is essential to life but toxic in high quantities. Only a small amount of copper in an environment is typically bio-available, which means directly observing the environmental levels is not an accurate measure of its effects. Copper can accumulate due to mining, fertilizer, manufacturing, etc.\\
+        \hline
+        Tissue Composition: Chromium & \makecell[l]{Low ($<.6$)\\Medium ($0.6-1.19$)\\High ($>1.19$)} & This trace element is one of the most toxic heavy metals. While the naturally occurring form is essential to life, even small amounts of Cr produced through industrial processes has extremely detrimental effects.\\
+        \hline
+    \end{tabular}
+\end{table}
 
 \section{Modeling and Inference}
 
@@ -145,23 +182,10 @@ The equations for Pollution $P(Pe \mid R, F)$, Lichen Species $P(Sp \mid F, Pe)$
 %
 \[P(Pe = p \mid R = r, F = f) = \frac{\sum_{t=1}^T I(p,p_t)\ I(r,r_t)\ I(f,f_t)}{\sum_{t=1}^T I(r,r_t)\ I(f,f_t)}\]
 
-\[P(Sp = s \mid R = r, F = f, Pe = p) = \frac{\sum_{t=1}^T I(s,s_t)\ I(r,r_t)\ I(f,f_t)\ I(p,p_t)}{\sum_{t=1}^T I(r,r_t)\ I(f,f_t)\ I(p,p_t)}\]
+\[P(Sp = sp \mid R = r, F = f, Pe = pe) =\frac{\sum_{n: R^{(n)} = r, F^{(n)} = f, Pe^(n) = pe, Sp^{(n)}=sp, } 1}{\sum_{n: R^{(n)} = r, F^{(n)} = f, Pe^{(n)} = pe} 1}\]
 
-\[P(E = e \mid Sp = s, Pe=p) = \frac{\sum_{t=1}^T I(e,e_t)\ I(s,s_t)\ I(p,p_t)}{\sum_{t=1}^T I(s,s_t)\ I(p,p_t)}\]
+\[P(T = t \mid Sp = sp, Pe=pe) =\frac{\sum_{n: Sp^{(n)}=sp,Pe^(n) = pe, T^{(n)}=t} 1}{\sum_{n: R^{(n)}=r, F^{(n)} = f} 1}\]
 
-
-
-For inference we start with the joint equation where $T_i$ denotes each pollutant found in the tissue samples
-(e.g. nitrogen, sulfur, phosphorus, lead, copper, chromium):
-\[
-P(R, F, Pe, Sp, T) = P(R)P(F)P(Pe|R,F)P(Sp|R, F, Pe)\sum_iP(T_i|Sp, Pe)
-\]
-
-We are looking to infer the pollution level given the lichen species, tissue composition, region, and field collection date. Thus we have
-\[
-P(Pe | T, R, F, Sp)= \frac{P(Pe, T, R, F, Sp)}{P(T, R, F, Sp)}\]
-\[= \frac{P(R)P(F)P(Pe|R,F)P(Sp|R, F, Pe)\sum_iP(T_i|Sp, Pe)}{\sum_{pe'}P(R)P(F)P(pe'|R,F)P(Sp|R, F, pe')\sum_iP(T_i|Sp, pe')}\]
-\[= \frac{P(Pe|R,F)P(Sp|R, F, Pe)\sum_iP(T_i|Sp, Pe)}{\sum_{pe'}P(pe'|R,F)P(Sp|R, F, pe')\sum_iP(T_i|Sp, pe')}\]
 \subsection{Bayesian Network with Hidden Node}
 
 The rationale for introducing a hidden node to model hidden spatiotemporal aspects of the environment is twofold: firstly, despite the wealth of columns in the data about the environment in which the lichen were found in (region, elevation, etc.), there still could be some aspects of the environment not directly captured or observed in the dataset, such as microclimate. Addressing these in a hidden node will allow for the model to be more robust in its modeling of the relationship between lichen, their environment, and pollutants by acting as a latent variable that captures these other hidden aspects. Consequently, this model assumes that the effect of the temporal aspects of the environment on other nodes in the graph can be approximated by this hidden node. Secondly, some data in the dataset itself is lacking. The EM algorithm in conjunction with the hidden node structure handles incomplete data by inferring missing values in the E-step. This contrasts with case deletion or imputation that could introduce bias.
@@ -266,6 +290,9 @@ Discuss what aspects of the data does the model capture or miss, and do the lear
 For MLE, this calculation is performed on the observed data; thus, it scales linearly with the size of the dataset. More data will obviously yield a more accurate reflection of the data.
 As a result, our choice of configurations are limited since adjusting configurations for the MLE model would require shifting away from the network structure we believe is ideal for capturing the node relationships of our dataset. Similarly, beyond changing the network structure for the EM model, we are limited to only adjusting the initialization values of our model.
 
+For evaluating our EM implementation, we relied on accuracy score of predictions on our test set(which is 20\% of our dataset). For reference, we calculate our predictions by taking our discretized air pollution score buckets and selecting the one that has the highest probability given the rest of our data using the CPTs of our model. Then, we can calculate the accuracy of our model on the test set by taking all of our predictions for each data point and determining the ratio of number of correct predictions to total number of samples. During training time, we also track the log-likelihood of our data in order to verify that we are learning. \newline
+Overall, our EM model appears to perform significantly better than our implementation of Maximum Likelihood Estimation. We can see that we are able to achieve peak accuracy scores of around {\textbf{72.4\%}}, and it seems that trying different numbers of iterations: \{25, 50, 100, 200, 300\} did not improve our prediction accuracy any more than what we achieved at 200 iterations. We can also see that our log-likelihood appears to plateau as we increase the number of iterations, indicating that we are close to convergence. We also attempted to vary the number of buckets for hidden nodes that we had in our belief network. Setting the number of hidden nodes from 2 to any of \{3, 5\} did not result in an increase in accuracy. Increasing the number of hidden nodes to 3 yielded an accuracy score of 57.5\% and increasing to 5 nodes yielded a higher accuracy score of 70.8\% which was still less than what we achieved with 2 hidden nodes.\newline
+\includegraphics[width=0.25\textwidth]{log_likelihood_curve.png}
 \section{Conclusion}
 
 We faced several limitations when developing our models. While we strove to simulate a scientifically accurate belief network using nodes derived from the data columns of our source, there were instances where we were unsure how to incorporate certain nodes like abundance. Furthermore, we were unable to use every column from the dataset due to sparsity and bad distribution. We had originally intended to employ far more parent nodes that capture environmental aspects like precipitation, elevation, and more, but we were limited by how sparse they were in the dataset and ultimately chose to not include them.
