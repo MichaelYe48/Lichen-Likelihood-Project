@@ -82,13 +82,12 @@ def binYearNode(colName, df):
     return df, intervals
 
 def binAirPollutionNode(colName, df):
-    newColName = colName + '_binned'
-    bins = ['unaffected','affected']
-    intervals = [-np.inf, -.11, np.inf]
+    return binElementNode(colName,df)
+    #newColName = colName + '_binned'
     #intervals = [-10, -.11, .02, .21, .35, .49, np.inf]
     #bins = ['best', 'good', 'fair', 'degraded', 'poor', 'worst']
-    df[newColName] = pd.cut(df[colName], intervals, labels=bins)
-    return df, intervals
+    #df[newColName] = pd.cut(df[colName], intervals, labels=bins)
+    #return df, intervals
 
     #return binElementNode(colName, df) #percentile binning
 
