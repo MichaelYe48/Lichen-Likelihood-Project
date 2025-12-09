@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import csv
 import matplotlib.pyplot as plt
+from collections import defaultdict
 
 
 def loadData(file_name):
@@ -71,21 +72,24 @@ def binElementNode(colName, df):
     bins = ['low', 'medium', 'high']
     df[newColName], intervals = pd.qcut(df[colName], q=3, labels=bins, retbins=True)
 
-    return df, newColName, intervals
+    return df, intervals.tolist()
 
 def binYearNode(colName, df):
     newColName = colName + '_binned'
     bins = ["before 1995", "1995-2005", "2005-present"]
     intervals = [0,1995,2005,np.inf]
     df[newColName] = pd.cut(df[colName], intervals, labels=bins)
-    return df
+    return df, intervals
 
 def binAirPollutionNode(colName, df):
-    newColName = colName + '_binned'
-    bins = ['best', 'good', 'fair', 'degraded', 'poor', 'worst']
-    intervals = [-10, -.11, .02, .21, .35, .49, np.inf]
-    df[newColName] = pd.cut(df[colName], intervals, labels=bins)
-    return df
+    return binElementNode(colName,df)
+    #newColName = colName + '_binned'
+    #intervals = [-10, -.11, .02, .21, .35, .49, np.inf]
+    #bins = ['best', 'good', 'fair', 'degraded', 'poor', 'worst']
+    #df[newColName] = pd.cut(df[colName], intervals, labels=bins)
+    #return df, intervals
+
+    #return binElementNode(colName, df) #percentile binning
 
 def binRegionNode(colName, df):
     df.dropna(subset=[colName], inplace=True)
@@ -100,7 +104,8 @@ def binRegionNode(colName, df):
     }
     inv_map = { v : k for (k,l) in bins.items() for v in l}
     df[newColName] = df[colName].map(inv_map)
-    return df
+    bins = [list(v) for k,v in inv_map.items()]
+    return df, bins
 
 def binSpeciesNode(colName,df):
     df.dropna(subset=[colName], inplace=True)
@@ -113,7 +118,7 @@ def binSpeciesNode(colName,df):
         'plagla' : 'Species 5'
     }
     df[newColName] = df[colName].map(bins).fillna('Other')
-    return df
+    return df, list(bins.keys())+['Other']
     
 
 
@@ -128,15 +133,14 @@ element_list = [
     'phosphorous',
     'lead',
     'copper',
-    'chromium',
-    'air pollution score'
-    #'potassium', 'manganese'
+    'chromium'
+    #'air pollution score'
 ]
 
 #Other nodes
 num_list = [
     'Year of tissue collection',
-    #'Air pollution score'
+    'Air pollution score'
 ]
 notNum_list = [
     'Region',
@@ -148,22 +152,27 @@ df_mod = df.copy()
 elementNames = []
 for n in element_list+num_list:
     df_mod, newCol = filterByNode(n,df_mod,verbose=False)
-    elementNames.append(newCol)
+    if n in element_list:
+        elementNames.append(newCol)
 
 for n in notNum_list:
     df_mod, newCol = filterByNode(n,df_mod,isNum=False,verbose=False)
 
 
 #Bin elements
-elementIntervals = []
-for n in elementNames+num_list:
-    df_mod, _, intervals = binElementNode(n,df_mod)
-    elementIntervals.append(intervals)
+nodeNameBinMap = defaultdict(list)
+for n in elementNames:
+    df_mod, intervals = binElementNode(n,df_mod)
+    nodeNameBinMap[n] = intervals
 # Bin other nodes
-df_mod = binYearNode(num_list[0],df_mod)
-#df_mod = binAirPollutionNode(num_list[1],df_mod)
-df_mod = binRegionNode(notNum_list[0],df_mod)
-df_mod = binSpeciesNode(notNum_list[1],df_mod)
+df_mod, inF = binYearNode(num_list[0],df_mod)
+df_mod, inP = binAirPollutionNode(num_list[1],df_mod)
+df_mod, inR = binRegionNode(notNum_list[0],df_mod)
+df_mod, inS = binSpeciesNode(notNum_list[1],df_mod)
+for name,bin in zip(num_list+notNum_list,[inF,inP,inR,inS]):
+    nodeNameBinMap[name] = bin
+for node,bin in nodeNameBinMap.items():
+    print(f"{node}: {bin}")
 
 #Final DF:
 bin_names = [b for b in list(df_mod.columns) if "_binned" in b]
