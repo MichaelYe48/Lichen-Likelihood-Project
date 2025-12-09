@@ -140,18 +140,10 @@ For all equations described, the following notation holds true:\\
 \end{itemize}
 
 \subsection{Bayesian Network with Complete Data}
-This model is a simplified representation of the data without a hidden node, and is to be used when the variables in the Bayesian Network are fully observed. Without a hidden node, Field Collection Date and Region connect directly to Pollution in the Environment and Lichen Species. This model assumes that the direct temporal and regional information is sufficient to predict pollution levels. Due to its simpler structure and its use of complete, observed data, this model allows for direct interpretability.
+This model (See Appendix A) is a simplified representation of the data without a hidden node, and is to be used when the variables in the Bayesian Network are fully observed. Without a hidden node, Field Collection Date and Region connect directly to Pollution in the Environment and Lichen Species. This model assumes that the direct temporal and regional information is sufficient to predict pollution levels. Due to its simpler structure and its use of complete, observed data, this model allows for direct interpretability.
 
 \subsubsection{Network Structure of Bayesian Network with Complete Data}
 Figure 2 depicts the graph structure of the Bayesian Network with Complete Data: Field Collection Date and Region serve as independent root nodes that connect directly to Pollution in the Environment and Lichen Species, without a hidden intermediary like with the model in Figure 1. Pollution in the Environment then also determines the lichen species and the tissue composition.
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.75\linewidth]{MLE_BN.png}
-    \label{EM}
-    \caption{Bayesian Network Structure with Complete Data}
-\end{figure}
-\FloatBarrier
 
 This Bayesian Network contains the following nodes:
 \begin{itemize}
@@ -190,37 +182,17 @@ The equations for Pollution $P(Pe \mid R, F)$, Lichen Species $P(Sp \mid F, Pe)$
 %
 \[P(Pe = p \mid R = r, F = f) = \frac{\sum_{t=1}^T I(p,p_t)\ I(r,r_t)\ I(f,f_t)}{\sum_{t=1}^T I(r,r_t)\ I(f,f_t)}\]
 
-\[P(Sp = s \mid R = r, F = f, Pe = p) = \frac{\sum_{t=1}^T I(s,s_t)\ I(r,r_t)\ I(f,f_t)\ I(p,p_t)}{\sum_{t=1}^T I(r,r_t)\ I(f,f_t)\ I(p,p_t)}\]
+\[P(Sp = sp \mid R = r, F = f, Pe = pe) =\frac{\sum_{n: R^{(n)} = r, F^{(n)} = f, Pe^(n) = pe, Sp^{(n)}=sp, } 1}{\sum_{n: R^{(n)} = r, F^{(n)} = f, Pe^{(n)} = pe} 1}\]
 
-\[P(E = e \mid Sp = s, Pe=p) = \frac{\sum_{t=1}^T I(e,e_t)\ I(s,s_t)\ I(p,p_t)}{\sum_{t=1}^T I(s,s_t)\ I(p,p_t)}\]
+\[P(T = t \mid Sp = sp, Pe=pe) =\frac{\sum_{n: Sp^{(n)}=sp,Pe^(n) = pe, T^{(n)}=t} 1}{\sum_{n: R^{(n)}=r, F^{(n)} = f} 1}\]
 
-
-
-For inference we start with the joint equation where $T_i$ denotes each pollutant found in the tissue samples
-(e.g. nitrogenm, sulfur, phosphorus, lead, copper, chromium):
-\[
-P(R, F, Pe, Sp, T) = P(R)P(F)P(Pe|R,F)P(Sp|R, F, Pe)\sum_iP(T_i|Sp, Pe)
-\]
-
-We are looking to infer the pollution level given the lichen species, tissue composition, region, and field collection date. Thus we have
-\[
-P(Pe | T, R, F, Sp)= \frac{P(Pe, T, R, F, Sp)}{P(T, R, F, Sp)}\]
-\[= \frac{P(R)P(F)P(Pe|R,F)P(Sp|R, F, Pe)\sum_iP(T_i|Sp, Pe)}{\sum_{pe'}P(R)P(F)P(pe'|R,F)P(Sp|R, F, pe')\sum_iP(T_i|Sp, pe')}\]
-\[= \frac{P(Pe|R,F)P(Sp|R, F, Pe)\sum_iP(T_i|Sp, Pe)}{\sum_{pe'}P(pe'|R,F)P(Sp|R, F, pe')\sum_iP(T_i|Sp, pe')}\]
 \subsection{Bayesian Network with Hidden Node}
 
 The rationale for introducing a hidden node to model hidden spatiotemporal aspects of the environment is twofold: firstly, despite the wealth of columns in the data about the environment in which the lichen were found in (region, elevation, etc.), there still could be some aspects of the environment not directly captured or observed in the dataset, such as microclimate. Addressing these in a hidden node will allow for the model to be more robust in its modeling of the relationship between lichen, their environment, and pollutants by acting as a latent variable that captures these other hidden aspects. Consequently, this model assumes that the effect of the temporal aspects of the environment on other nodes in the graph can be approximated by this hidden node. Secondly, some data in the dataset itself is lacking. The EM algorithm in conjunction with the hidden node structure handles incomplete data by inferring missing values in the E-step. This contrasts with case deletion or imputation that could introduce bias.
 
 \subsubsection{Network Structure of Bayesian Network with Hidden Node}
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.75\linewidth]{EM_BN.png}
-    \label{EM}
-    \caption{Bayesian Network Structure with Hidden Node}
-\end{figure}
-\FloatBarrier
 
-For this Bayesian Network, all nodes are the same as for the previous model besides the addition of a hidden node $H$. This node separates our region/environment variables from the lichen species and air pollution score. The goal of this node is to learn latent spatial temporal aspects such as seasonal patterns or regional mineral baselines. The presence of this node means that we cannot naively use a Maximum Likelihood Estimate like we would for a network with complete data without some additional work. Therefore, we will opt to learn our CPTs through the Expectation Maximization (EM) algorithm. For each sample we aim to first calculate the probability of our hidden variable (the relevance of our regional data) given our other observed features. This probability is our posterior. Then, in the Maximization step, we want to update our CPTs using the posterior we calculated in the E step. Essentially, we will use our estimated expectation to fill in the value of our hidden node. The ultimate goal of using EM for this task and introducing our hidden variable is to give our model some flexibility in terms of how it weights the relevance of our region based features.
+For this Bayesian Network (See Appendix B), all nodes are the same as for the previous model besides the addition of a hidden node $H$. This node separates our region/environment variables from the lichen species and air pollution score. The goal of this node is to learn latent spatial temporal aspects such as seasonal patterns or regional mineral baselines. The presence of this node means that we cannot naively use a Maximum Likelihood Estimate like we would for a network with complete data without some additional work. Therefore, we will opt to learn our CPTs through the Expectation Maximization (EM) algorithm. For each sample we aim to first calculate the probability of our hidden variable (the relevance of our regional data) given our other observed features. This probability is our posterior. Then, in the Maximization step, we want to update our CPTs using the posterior we calculated in the E step. Essentially, we will use our estimated expectation to fill in the value of our hidden node. The ultimate goal of using EM for this task and introducing our hidden variable is to give our model some flexibility in terms of how it weights the relevance of our region based features.
 
 \subsubsection{Optimization with Expectation Maximization}
 
@@ -302,11 +274,21 @@ The E and M steps are repeated in turn for every value of every node until the l
 
 \section{Results and Discussion}
 
-We explored two different belief networks for this project, one with and one without a hidden node representing unobserved temporal qualities of the environment. These networks required us to use the Maximum Likelihood Estimate and Expectation Maximization algorithms. As a result, our choice of configurations are limited since adjusting configurations for the MLE model would require shifting away from the network structure we believe is ideal for capturing the node relationships of our dataset. Similarly, beyond changing the network structure for the EM model, we are limited to only adjusting the initialization values of our model.
-To help evaluate our MLE model, we used a baseline model that predicts the pollution level based on the region and field collection date using MLE.
-For our MLE model which uses all the nodes, our model achieved an accuracy of 35.6\% compared to the baseline accuracy of 52.5\%.
-One insight we stumbled upon when fixing the dataset was that lobsided distributions of pollution levels led to high model accuracy. Specifically, our pollution levels were orginally 
-binned according to thresholds we found on the dataset website not by percentile. As a result, predicting the most common pollution level yieled relatively high baseline results.
+\subsection{Compare and Contrast of Different Network Structures}
+We explored two different belief networks for this project, one with and one without a hidden node representing unobserved temporal qualities of the environment. These networks required us to use the Maximum Likelihood Estimate and Expectation Maximization algorithms.
+
+\subsection{Quantitative Results}
+To evaluate both the MLE and EM implementations, we utilized the accuracy of predictions on the test set (20\% of the dataset.) We calculated our predictions by taking our discretized air pollution score buckets and selecting the one that has the highest probability given the rest of our data using the CPTs of our model. Then, we can calculate the accuracy of our model on the test set by taking all of our predictions for each data point and determining the ratio of number of correct predictions to total number of samples. (For a table comparing the models, see Appendix C.)
+
+The MLE model predicting $P(Pe \mid Sp, T)$ achieved an accuracy of 52.2\%. Overall, our EM model appears to perform significantly better than our implementation of Maximum Likelihood Estimation. We can see that we are able to achieve peak accuracy scores of around {\textbf{72.4\%}}, and it seems that trying different numbers of iterations: \{25, 50, 100, 200, 300\} did not improve our prediction accuracy any more than what we achieved at 200 iterations.
+
+During training time, we also tracked the log-likelihood of our data in order to verify that we are learning. We can observe that our log-likelihood appears to plateau as we increase the number of iterations, indicating that we are close to convergence. We also attempted to vary the number of buckets for hidden nodes that we had in our belief network. Setting the number of hidden nodes from 2 to any of \{3, 5\} did not result in an increase in accuracy. Increasing the number of hidden nodes to 3 yielded an accuracy score of 57.5\% and increasing to 5 nodes yielded a higher accuracy score of 70.8\% which was still less than what we achieved with 2 hidden nodes.
+\subsection{Qualitative Insights}
+Discuss what aspects of the data does the model capture or miss, and do the learned CPTs or latent states align with intuition?
+
+\subsection{Convergence and Scalability}
+For MLE, this calculation is performed on the observed data; thus, it scales linearly with the size of the dataset. More data will obviously yield a more accurate reflection of the data.
+As a result, our choice of configurations are limited since adjusting configurations for the MLE model would require shifting away from the network structure we believe is ideal for capturing the node relationships of our dataset. Similarly, beyond changing the network structure for the EM model, we are limited to only adjusting the initialization values of our model.
 
 For evaluating our EM implementation, we relied on accuracy score of predictions on our test set(which is 20\% of our dataset). For reference, we calculate our predictions by taking our discretized air pollution score buckets and selecting the one that has the highest probability given the rest of our data using the CPTs of our model. Then, we can calculate the accuracy of our model on the test set by taking all of our predictions for each data point and determining the ratio of number of correct predictions to total number of samples. During training time, we also track the log-likelihood of our data in order to verify that we are learning. \newline
 Overall, our EM model appears to perform significantly better than our implementation of Maximum Likelihood Estimation. We can see that we are able to achieve peak accuracy scores of around {\textbf{72.4\%}}, and it seems that trying different numbers of iterations: \{25, 50, 100, 200, 300\} did not improve our prediction accuracy any more than what we achieved at 200 iterations. We can also see that our log-likelihood appears to plateau as we increase the number of iterations, indicating that we are close to convergence. We also attempted to vary the number of buckets for hidden nodes that we had in our belief network. Setting the number of hidden nodes from 2 to any of \{3, 5\} did not result in an increase in accuracy. Increasing the number of hidden nodes to 3 yielded an accuracy score of 57.5\% and increasing to 5 nodes yielded a higher accuracy score of 70.8\% which was still less than what we achieved with 2 hidden nodes.\newline
@@ -360,8 +342,58 @@ Siena: I worked on drafting the EM equations, modeling both BNs, filtering and b
 
 [15] \url{https://plants.usda.gov/downloads}
 
-\nocite{*}
-\bibliographystyle{plainnat} 
-\bibliography{references}
+\newpage
+\section{Appendix}
+
+\appendix
+\setcounter{section}{0}
+\renewcommand{\thesection}{\Alph{section}}
+
+
+\section{Bayesian Network Structure with Complete Data}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.75\linewidth]{MLE_BN.png}
+    \label{EM}
+\end{figure}
+\FloatBarrier
+
+\section{Bayesian Network with Hidden Node}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.75\linewidth]{EM_BN.png}
+    \label{EM}
+\end{figure}
+\FloatBarrier
+
+\section{Comparison of Pollution Element ($Pe$) Prediction Accuracy Across Different Bayesian Network Modeling Techniques}
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{lcc}
+        \toprule
+        \textbf{Model Description} & \textbf{Estimation Method} & \textbf{Accuracy (\%)} \\
+        \midrule
+        \textbf{Full Network Inference} & MLE (Counting) & 52.2 \\
+        $P(Pe \mid Sp, T)$ & & \\
+        \hline
+        \textbf{Full Network Inference} & EM Algorithm & 72.4 \\
+        (with Latent Variables/Missing Data) & & \\
+        \bottomrule
+    \end{tabular}
+    \label{tab:model_accuracy}
+\end{table}
+
+\section{Log Likelihood}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.75\linewidth]{log_likelihood_curve.png}
+    \label{LL}
+\end{figure}
+\FloatBarrier
+
+
 
 \end{document}
