@@ -186,6 +186,19 @@ The equations for Pollution $P(Pe \mid R, F)$, Lichen Species $P(Sp \mid F, Pe)$
 
 \[P(T = t \mid Sp = sp, Pe=pe) =\frac{\sum_{n: Sp^{(n)}=sp,Pe^(n) = pe, T^{(n)}=t} 1}{\sum_{n: R^{(n)}=r, F^{(n)} = f} 1}\]
 
+We are looking to infer the pollution level given the lichen species and tissue composition. Thus we have
+\[=
+P(Pe | T, Sp)= \frac{P(Pe, T, Sp)}{P(T, Sp)}\]
+\[
+= \frac{\sum_{r',f'}P(Pe, T, r', f', Sp)}{\sum_{r',f',pe'}P(T, r', f', Sp, pe')}\]
+\[\text{numerator} = \sum_{f',r'}P(r')P(f')P(Pe|r',f')P(Sp|r',f')P(T|Sp, Pe)
+\]
+\[=P(T|Sp,Pe)\sum_{f'}P(f')\sum_{r'}P(r')P(Pe|r',f')P(Sp|r',f')\]
+\[f_1=\sum_{r'}P(r')P(Pe|r',f')P(Sp|r',f')\]
+\[=P(T|Sp,Pe)\sum_{f'}P(f')f_1\]
+\[f_2=\sum_{f'}P(f')f_1\]
+\[=P(T|Sp,Pe)f_2\]
+\[\text{finally, we have } P(Pe|T,Sp)=\alpha P(T|Sp,Pe)f_2\]
 \subsection{Bayesian Network with Hidden Node}
 
 The rationale for introducing a hidden node to model hidden spatiotemporal aspects of the environment is twofold: firstly, despite the wealth of columns in the data about the environment in which the lichen were found in (region, elevation, etc.), there still could be some aspects of the environment not directly captured or observed in the dataset, such as microclimate. Addressing these in a hidden node will allow for the model to be more robust in its modeling of the relationship between lichen, their environment, and pollutants by acting as a latent variable that captures these other hidden aspects. Consequently, this model assumes that the effect of the temporal aspects of the environment on other nodes in the graph can be approximated by this hidden node. Secondly, some data in the dataset itself is lacking. The EM algorithm in conjunction with the hidden node structure handles incomplete data by inferring missing values in the E-step. This contrasts with case deletion or imputation that could introduce bias.
