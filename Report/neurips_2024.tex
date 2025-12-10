@@ -418,6 +418,372 @@ Siena: I worked on drafting the EM equations, modeling both BNs, filtering and b
 \end{figure}
 \FloatBarrier
 
+\begin{table}[h!]
+    \centering
+    \caption{Marginal Probability Table $P(\text{Region})$}
+    \label{tab:p_region}
+    \begin{tabular}{|c|c|}
+        \hline
+        \textbf{Region} & \textbf{Probability} \\
+        \hline
+        10 & 0.0446 \\
+        6 & 0.9554 \\
+        \hline
+        \textbf{Total} & \textbf{1.0000} \\
+        \hline
+    \end{tabular}
+\end{table}
 
+\begin{table}[h!]
+    \centering
+    \caption{Marginal Probability Table $P(\text{Year})$}
+    \label{tab:p_year}
+    \begin{tabular}{|c|c|}
+        \hline
+        \textbf{Year} & \textbf{Probability} \\
+        \hline
+        before 1995 & 0.2201 \\
+        1995--2005 & 0.6141 \\
+        2005--present & 0.1658 \\
+        \hline
+        \textbf{Total} & \textbf{1.0000} \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\begin{table}[h]
+    \centering
+    \caption{CPT: $P(Pollution \mid \text{Region}, \text{Field Collection Date})$}
+    \begin{tabular}{c c c c c}
+    \hline
+    Region & Time Period & Low & Medium & High \\
+    \hline
+    6  & Before 1995   & 0.3398 & 0.3541 & 0.3061 \\
+    6  & 1995--2005    & 0.2942 & 0.3651 & 0.3407 \\
+    6  & 2005--Present & 0.3174 & 0.2895 & 0.3931 \\
+    \hline
+    10 & Before 1995   & 0.8333 & 0.1282 & 0.0385 \\
+    10 & 1995--2005    & 0.8387 & 0.0565 & 0.1048 \\
+    10 & 2005--Present & 0.7222 & 0.2407 & 0.0370 \\
+    \hline
+    \end{tabular}
+\end{table}
+
+\begin{table}[h]
+    \centering
+    \caption{CPT: $P(Species|Region, Field Collection Date, Pollution)$}
+    \begin{tabular}{c c c c c c}
+    \hline
+    Region & Field Collection Date & Species & Low & Medium & High \\
+    \hline
+    10 & 1995-2005 & Other & 0.2115 & 0.2857 & 0.1538 \\
+    10 & 1995-2005 & Species 1 & 0.5962 & 0.2857 & 0.3077 \\
+    10 & 1995-2005 & Species 5 & 0.1923 & 0.4286 & 0.5385 \\
+    \hline
+    10 & 2005-present & Other & 0.2821 & 0.4615 & nan \\
+    10 & 2005-present & Species 1 & 0.3846 & 0.0769 & 0.5000 \\
+    10 & 2005-present & Species 5 & 0.3333 & 0.4615 & 0.5000 \\
+    \hline
+    10 & before 1995 & Species 1 & 1.0000 & 1.0000 & 1.0000 \\
+    \hline
+    6 & 1995-2005 & Other & 0.2927 & 0.2472 & 0.3624 \\
+    6 & 1995-2005 & Species 1 & 0.2537 & 0.2625 & 0.1044 \\
+    6 & 1995-2005 & Species 3 & 0.0260 & 0.0942 & 0.1337 \\
+    6 & 1995-2005 & Species 4 & 0.1848 & 0.0821 & 0.1242 \\
+    6 & 1995-2005 & Species 5 & 0.2428 & 0.3140 & 0.2752 \\
+    \hline
+    6 & 2005-present & Other & 0.2421 & 0.2038 & 0.3088 \\
+    6 & 2005-present & Species 1 & 0.1965 & 0.2462 & 0.0793 \\
+    6 & 2005-present & Species 3 & 0.0421 & 0.0577 & 0.1020 \\
+    6 & 2005-present & Species 4 & 0.2386 & 0.2462 & 0.2550 \\
+    6 & 2005-present & Species 5 & 0.2807 & 0.2462 & 0.2550 \\
+    \hline
+    6 & before 1995 & Other & 0.3871 & 0.3310 & 0.5069 \\
+    6 & before 1995 & Species 1 & 0.2953 & 0.3143 & 0.1074 \\
+    6 & before 1995 & Species 3 & 0.0174 & 0.0548 & 0.0882 \\
+    6 & before 1995 & Species 4 & 0.1117 & 0.0500 & 0.1074 \\
+    6 & before 1995 & Species 5 & 0.1886 & 0.2500 & 0.1901 \\
+    \hline
+    \end{tabular}
+\end{table}
+    
+
+\begin{table}[h]
+    \centering
+    \caption{CPT: $P(H \mid \text{Region}, \text{Field Collection Date})$}
+    \begin{tabular}{|c|c|c|c|}
+    \hline
+    Region & Field Collection Date & $P(H=0)$ & $P(H=1)$ \\
+    \hline
+    10 & before 1995 & 0.9998 & 0.0002 \\
+    10 & 1995-2005 & 0.9995 & 0.0005 \\
+    10 & 2005-present & 0.9809 & 0.0191 \\
+    \hline
+    6 & before 1995 & 0.2061 & 0.7939 \\
+    6 & 1995-2005 & 0.1377 & 0.8623 \\
+    6 & 2005-present & 0.1095 & 0.8905 \\
+    \hline
+    \end{tabular}
+\end{table}
+
+\begin{table}[h]
+    \centering
+    \caption{CPT: $P(\text{Pollution} \mid Hidden(H))$}
+    \begin{tabular}{|c|c|c|}
+    \hline
+    H & Pollution & Probability \\
+    \hline
+    0 & low & 0.8047 \\
+    0 & medium & 0.1276 \\
+    0 & high & 0.0677 \\
+    \hline
+    1 & low & 0.2222 \\
+    1 & medium & 0.3884 \\
+    1 & high & 0.3894 \\
+    \hline
+    \end{tabular}
+\end{table}
+
+\begin{table}[h]
+    \centering
+    \caption{CPT: $P(\text{Species} \mid H, \text{Pollution})$}
+    \begin{tabular}{|c|c|c|c|c|c|c|}
+    \hline
+    H & Pollution & Other & Species 1 & Species 3 & Species 4 & Species 5 \\
+    \hline
+    0 & low    & 0.1881 & 0.6646 & 0.0000 & 0.0000 & 0.1472 \\
+    0 & medium & 0.2861 & 0.4463 & 0.0003 & 0.0002 & 0.2671 \\
+    0 & high   & 0.1300 & 0.4608 & 0.0005 & 0.0005 & 0.4082 \\
+    \hline
+    1 & low    & 0.3749 & 0.0008 & 0.0433 & 0.2867 & 0.2942 \\
+    1 & medium & 0.2578 & 0.2612 & 0.0853 & 0.1030 & 0.2928 \\
+    1 & high   & 0.3875 & 0.0894 & 0.1225 & 0.1499 & 0.2507 \\
+    \hline
+    \end{tabular}
+\end{table}
+
+\begin{table}[h]
+    \centering
+    \caption{CPT: $P(\text{Nitrogen (\% dw)\_binned} \mid \text{Pollution}, \text{Species})$}
+    \begin{tabular}{|c|c|c|c|c|}
+    \hline
+    Pollution & Species & low & medium & high \\
+    \hline
+    low    & Other      & 0.1688 & 0.2704 & 0.5608 \\
+    low    & Species 1  & 0.8021 & 0.1821 & 0.0158 \\
+    low    & Species 3  & 0.0668 & 0.7331 & 0.2001 \\
+    low    & Species 4  & 0.1040 & 0.4899 & 0.4060 \\
+    low    & Species 5  & 0.5208 & 0.4560 & 0.0232 \\
+    \hline
+    medium & Other      & 0.2189 & 0.3116 & 0.4694 \\
+    medium & Species 1  & 0.6972 & 0.2766 & 0.0262 \\
+    medium & Species 3  & 0.1355 & 0.6774 & 0.1871 \\
+    medium & Species 4  & 0.1123 & 0.4973 & 0.3904 \\
+    medium & Species 5  & 0.5299 & 0.4384 & 0.0317 \\
+    \hline
+    high   & Other      & 0.0867 & 0.1706 & 0.7426 \\
+    high   & Species 1  & 0.5255 & 0.3979 & 0.0766 \\
+    high   & Species 3  & 0.1166 & 0.3049 & 0.5784 \\
+    high   & Species 4  & 0.0074 & 0.2711 & 0.7216 \\
+    high   & Species 5  & 0.1975 & 0.4053 & 0.3971 \\
+    \hline
+    \end{tabular}
+\end{table}
+
+\begin{table}[h]
+    \centering
+    \caption{CPT: $P(\text{Sulfur (\% dw)\_binned} \mid \text{Pollution}, \text{Species})$}
+    \begin{tabular}{|c|c|c|c|c|}
+    \hline
+    Pollution & Species & low & medium & high \\
+    \hline
+    low    & Other     & 0.3102 & 0.5021 & 0.1877 \\
+    low    & Species 1 & 0.6248 & 0.2924 & 0.0828 \\
+    low    & Species 3 & 0.4633 & 0.4289 & 0.1078 \\
+    low    & Species 4 & 0.1071 & 0.5225 & 0.3704 \\
+    low    & Species 5 & 0.2119 & 0.6004 & 0.1876 \\
+    \hline
+    medium & Other     & 0.2721 & 0.4688 & 0.2591 \\
+    medium & Species 1 & 0.5832 & 0.3283 & 0.0886 \\
+    medium & Species 3 & 0.4276 & 0.4538 & 0.1186 \\
+    medium & Species 4 & 0.1250 & 0.4916 & 0.3834 \\
+    medium & Species 5 & 0.2329 & 0.5782 & 0.1889 \\
+    \hline
+    high   & Other     & 0.1490 & 0.3936 & 0.4574 \\
+    high   & Species 1 & 0.5195 & 0.3278 & 0.1527 \\
+    high   & Species 3 & 0.2975 & 0.3860 & 0.3165 \\
+    high   & Species 4 & 0.0814 & 0.4172 & 0.5014 \\
+    high   & Species 5 & 0.1640 & 0.5299 & 0.3061 \\
+    \hline
+    \end{tabular}
+\end{table}
+
+\begin{table}[h]
+    \centering
+    \caption{CPT: $P(\text{Phosphorous (ppm dw)\_binned} \mid \text{Pollution}, \text{Species})$}
+    \begin{tabular}{|c|c|c|c|c|}
+    \hline
+    Pollution & Species & low & medium & high \\
+    \hline
+    low    & Other     & 0.4324 & 0.3572 & 0.2104 \\
+    low    & Species 1 & 0.6711 & 0.2506 & 0.0783 \\
+    low    & Species 3 & 0.5514 & 0.3490 & 0.0996 \\
+    low    & Species 4 & 0.2438 & 0.4257 & 0.3304 \\
+    low    & Species 5 & 0.3561 & 0.4848 & 0.1591 \\
+    \hline
+    medium & Other     & 0.4067 & 0.3698 & 0.2235 \\
+    medium & Species 1 & 0.6328 & 0.2789 & 0.0883 \\
+    medium & Species 3 & 0.5108 & 0.3732 & 0.1160 \\
+    medium & Species 4 & 0.2249 & 0.4541 & 0.3210 \\
+    medium & Species 5 & 0.3365 & 0.5055 & 0.1580 \\
+    \hline
+    high   & Other     & 0.2818 & 0.3902 & 0.3280 \\
+    high   & Species 1 & 0.5228 & 0.3049 & 0.1723 \\
+    high   & Species 3 & 0.4052 & 0.4027 & 0.1921 \\
+    high   & Species 4 & 0.1694 & 0.4620 & 0.3686 \\
+    high   & Species 5 & 0.3012 & 0.4990 & 0.1998 \\
+    \hline
+    \end{tabular}
+\end{table}
+
+\begin{table}[h]
+    \centering
+    \caption{CPT: $P(\text{Potassium (ppm dw)\_binned} \mid \text{Pollution}, \text{Species})$}
+    \begin{tabular}{|c|c|c|c|c|}
+    \hline
+    Pollution & Species & low & medium & high \\
+    \hline
+    low    & Other     & 0.2186 & 0.5430 & 0.2384 \\
+    low    & Species 1 & 0.4115 & 0.4650 & 0.1235 \\
+    low    & Species 3 & 0.3099 & 0.5008 & 0.1893 \\
+    low    & Species 4 & 0.1604 & 0.4037 & 0.4359 \\
+    low    & Species 5 & 0.1872 & 0.5738 & 0.2390 \\
+    \hline
+    medium & Other     & 0.2357 & 0.5342 & 0.2301 \\
+    medium & Species 1 & 0.3808 & 0.4861 & 0.1331 \\
+    medium & Species 3 & 0.2765 & 0.5197 & 0.2038 \\
+    medium & Species 4 & 0.1508 & 0.3946 & 0.4546 \\
+    medium & Species 5 & 0.1779 & 0.5742 & 0.2479 \\
+    \hline
+    high   & Other     & 0.1606 & 0.4727 & 0.3667 \\
+    high   & Species 1 & 0.3559 & 0.4588 & 0.1853 \\
+    high   & Species 3 & 0.2408 & 0.4828 & 0.2764 \\
+    high   & Species 4 & 0.1009 & 0.3600 & 0.5391 \\
+    high   & Species 5 & 0.1525 & 0.5186 & 0.3289 \\
+    \hline
+    \end{tabular}
+\end{table}
+
+\begin{table}[h]
+    \centering
+    \caption{CPT: $P(\text{Calcium (ppm dw)\_binned} \mid \text{Pollution}, \text{Species})$}
+    \begin{tabular}{|c|c|c|c|c|}
+    \hline
+    Pollution & Species & low & medium & high \\
+    \hline
+    low    & Other     & 0.4318 & 0.3281 & 0.2401 \\
+    low    & Species 1 & 0.7264 & 0.2130 & 0.0606 \\
+    low    & Species 3 & 0.5486 & 0.3443 & 0.1071 \\
+    low    & Species 4 & 0.2740 & 0.4091 & 0.3169 \\
+    low    & Species 5 & 0.3852 & 0.4297 & 0.1851 \\
+    \hline
+    medium & Other     & 0.4073 & 0.3448 & 0.2479 \\
+    medium & Species 1 & 0.6939 & 0.2313 & 0.0748 \\
+    medium & Species 3 & 0.5113 & 0.3610 & 0.1277 \\
+    medium & Species 4 & 0.2491 & 0.4250 & 0.3259 \\
+    medium & Species 5 & 0.3550 & 0.4558 & 0.1892 \\
+    \hline
+    high   & Other     & 0.3375 & 0.3799 & 0.2826 \\
+    high   & Species 1 & 0.6066 & 0.2701 & 0.1233 \\
+    high   & Species 3 & 0.4428 & 0.3912 & 0.1660 \\
+    high   & Species 4 & 0.1962 & 0.4534 & 0.3504 \\
+    high   & Species 5 & 0.3109 & 0.4871 & 0.2020 \\
+    \hline
+    \end{tabular}
+\end{table}
+
+\begin{table}[h]
+    \centering
+    \caption{CPT: $P(\text{Iron (ppm dw)\_binned} \mid \text{Pollution}, \text{Species})$}
+    \begin{tabular}{|c|c|c|c|c|}
+    \hline
+    Pollution & Species & low & medium & high \\
+    \hline
+    low    & Other     & 0.2589 & 0.4576 & 0.2835 \\
+    low    & Species 1 & 0.5942 & 0.3107 & 0.0951 \\
+    low    & Species 3 & 0.4092 & 0.4281 & 0.1627 \\
+    low    & Species 4 & 0.2146 & 0.4248 & 0.3606 \\
+    low    & Species 5 & 0.2465 & 0.5189 & 0.2346 \\
+    \hline
+    medium & Other     & 0.2473 & 0.4562 & 0.2965 \\
+    medium & Species 1 & 0.5701 & 0.3396 & 0.0903 \\
+    medium & Species 3 & 0.3905 & 0.4387 & 0.1709 \\
+    medium & Species 4 & 0.1926 & 0.4465 & 0.3609 \\
+    medium & Species 5 & 0.2274 & 0.5331 & 0.2395 \\
+    \hline
+    high   & Other     & 0.2210 & 0.4255 & 0.3535 \\
+    high   & Species 1 & 0.5240 & 0.3687 & 0.1073 \\
+    high   & Species 3 & 0.3498 & 0.4419 & 0.2083 \\
+    high   & Species 4 & 0.1621 & 0.4322 & 0.4057 \\
+    high   & Species 5 & 0.2056 & 0.5134 & 0.2810 \\
+    \hline
+    \end{tabular}
+\end{table}
+
+\begin{table}[h]
+    \centering
+    \caption{CPT: $P(\text{Manganese (ppm dw)\_binned} \mid \text{Pollution}, \text{Species})$}
+    \begin{tabular}{|c|c|c|c|c|}
+    \hline
+    Pollution & Species & low & medium & high \\
+    \hline
+    low    & Other     & 0.4936 & 0.3335 & 0.1729 \\
+    low    & Species 1 & 0.6810 & 0.2414 & 0.0776 \\
+    low    & Species 3 & 0.5438 & 0.3515 & 0.1047 \\
+    low    & Species 4 & 0.3139 & 0.4232 & 0.2629 \\
+    low    & Species 5 & 0.4167 & 0.4330 & 0.1503 \\
+    \hline
+    medium & Other     & 0.4630 & 0.3540 & 0.1830 \\
+    medium & Species 1 & 0.6513 & 0.2657 & 0.0830 \\
+    medium & Species 3 & 0.5112 & 0.3685 & 0.1203 \\
+    medium & Species 4 & 0.2851 & 0.4488 & 0.2661 \\
+    medium & Species 5 & 0.3952 & 0.4530 & 0.1518 \\
+    \hline
+    high   & Other     & 0.3758 & 0.3750 & 0.2492 \\
+    high   & Species 1 & 0.5739 & 0.3079 & 0.1182 \\
+    high   & Species 3 & 0.4351 & 0.3880 & 0.1769 \\
+    high   & Species 4 & 0.2384 & 0.4532 & 0.3084 \\
+    high   & Species 5 & 0.3514 & 0.4733 & 0.1753 \\
+    \hline
+    \end{tabular}
+\end{table}
+
+\begin{table}[h]
+    \centering
+    \caption{CPT: $P(\text{Zinc (ppm dw)\_binned} \mid \text{Pollution}, \text{Species})$}
+    \begin{tabular}{|c|c|c|c|c|}
+    \hline
+    Pollution & Species & low & medium & high \\
+    \hline
+    low    & Other     & 0.3795 & 0.4168 & 0.2037 \\
+    low    & Species 1 & 0.6497 & 0.2665 & 0.0838 \\
+    low    & Species 3 & 0.5078 & 0.3821 & 0.1101 \\
+    low    & Species 4 & 0.2759 & 0.4406 & 0.2835 \\
+    low    & Species 5 & 0.3391 & 0.4976 & 0.1633 \\
+    \hline
+    medium & Other     & 0.3623 & 0.4258 & 0.2119 \\
+    medium & Species 1 & 0.6270 & 0.2796 & 0.0934 \\
+    medium & Species 3 & 0.4799 & 0.3904 & 0.1297 \\
+    medium & Species 4 & 0.2574 & 0.4699 & 0.2727 \\
+    medium & Species 5 & 0.3206 & 0.5105 & 0.1689 \\
+    \hline
+    high   & Other     & 0.2976 & 0.4311 & 0.2713 \\
+    high   & Species 1 & 0.5625 & 0.3106 & 0.1270 \\
+    high   & Species 3 & 0.4201 & 0.4007 & 0.1792 \\
+    high   & Species 4 & 0.2054 & 0.4605 & 0.3341 \\
+    high   & Species 5 & 0.2910 & 0.5146 & 0.1944 \\
+    \hline
+    \end{tabular}
+\end{table}
 
 \end{document}
