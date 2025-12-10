@@ -155,20 +155,21 @@ The equations for Pollution $P(Pe \mid R, F)$, Lichen Species $P(Sp \mid F, Pe)$
 
 \[P(T = t \mid Sp = sp, Pe=pe) =\frac{\sum_{n: Sp^{(n)}=sp,Pe^(n) = pe, T^{(n)}=t} 1}{\sum_{n: R^{(n)}=r, F^{(n)} = f} 1}\]
 
-We are looking to infer the pollution level given the lichen species and tissue composition. Thus we have
-\[=
-P(Pe | T, Sp)= \frac{P(Pe, T, Sp)}{P(T, Sp)}\]
+We are looking to infer the pollution level given the lichen species and tissue composition. We represent this as
 \[
+P(Pe | T, Sp)\]
+Using variable elimination to break this down into factors, we have
+\[
+P(Pe | T, Sp)= \frac{P(Pe, T, Sp)}{P(T, Sp)}
 = \frac{\sum_{r',f'}P(Pe, T, r', f', Sp)}{\sum_{r',f',pe'}P(T, r', f', Sp, pe')}\]
-\[\text{numerator} = \sum_{f',r'}P(r')P(f')P(Pe|r',f')P(Sp|r',f')P(T|Sp, Pe)
+\[=\alpha\sum_{f',r'}P(r')P(f')P(Pe|r',f')P(Sp|r',f')P(T|Sp, Pe)
 \]
-\[=P(T|Sp,Pe)\sum_{f'}P(f')\sum_{r'}P(r')P(Pe|r',f')P(Sp|r',f')\]
+\[=\alpha P(T|Sp,Pe)f_2\]
+
+where
 \[f_1=\sum_{r'}P(r')P(Pe|r',f')P(Sp|r',f')\]
-\[=P(T|Sp,Pe)\sum_{f'}P(f')f_1\]
 \[f_2=\sum_{f'}P(f')f_1\]
-\[=P(T|Sp,Pe)f_2\]
-\[\text{finally, we have } P(Pe|T,Sp)=\alpha P(T|Sp,Pe)f_2\]
-where $\alpha$ is the normalization constant.
+\[\alpha\text{ is a normalizing constant such that the resulting probabilities sum to 1 i.e. }\sum_qP(q|E) = 1\]
 \subsection{Bayesian Network with Hidden Node}
 
 The rationale for introducing a hidden node to model hidden spatiotemporal aspects of the environment is twofold: firstly, despite the wealth of columns in the data about the environment in which the lichen were found in (region, elevation, etc.), there still could be some aspects of the environment not directly captured or observed in the dataset, such as microclimate. Addressing these in a hidden node will allow for the model to be more robust in its modeling of the relationship between lichen, their environment, and pollutants by acting as a latent variable that captures these other hidden aspects. Consequently, this model assumes that the effect of the temporal aspects of the environment on other nodes in the graph can be approximated by this hidden node. Secondly, some data in the dataset itself is lacking. The EM algorithm in conjunction with the hidden node structure handles incomplete data by inferring missing values in the E-step. This contrasts with case deletion or imputation that could introduce bias.
@@ -267,7 +268,9 @@ The MLE model predicting $P(Pe \mid Sp, T)$ achieved an accuracy of 52.2\%. Over
 
 During training time, we also tracked the log-likelihood of our data in order to verify that we are learning. We can observe that our log-likelihood appears to plateau as we increase the number of iterations, indicating that we are close to convergence. We also attempted to vary the number of buckets for hidden nodes that we had in our belief network. Setting the number of hidden nodes from 2 to any of \{3, 5\} did not result in an increase in accuracy. Increasing the number of hidden nodes to 3 yielded an accuracy score of 57.5\% and increasing to 5 nodes yielded a higher accuracy score of 70.8\% which was still less than what we achieved with 2 hidden nodes.
 \subsection{Qualitative Insights}
-Discuss what aspects of the data does the model capture or miss, and do the learned CPTs or latent states align with intuition?
+Taking a look at the CPTs learned from our MLE model, we can quickly observe that region 10 historically has much better air quality than region 6.
+This aligns with our intuition as region 10 represents Alaska, which is know to one of the lowest air pollution areas in the US due to its low population density whereas region 6 represents the Pacific Northwest which has a higher population density and more industrial activity.
+Our model appears to have missed the temporal aspect of the data as the CPTs indicate that air pollution has gotten worse in Alaska and the PNW over time, which is counter to the general trend of air pollution in the US decreasing over time due to environmental regulations.
 
 \subsection{Convergence and Scalability}
 For MLE, this calculation is performed on the observed data; thus, it scales linearly with the size of the dataset. More data will obviously yield a more accurate reflection of the data and help the model converge on the true value.
@@ -285,7 +288,7 @@ Potential extensions for our work would include building a more extensive belief
 
 Member contributions were as follows:\newline
 Tanishq: I worked on drafting the equations for the inference and updates for our CPTs using EM, implementing EM on our cleaned dataset, implementing log likelihood as a method of evaluation, and testing/evaluating the EM model. Through the process, I gained a much stronger understanding of how and where EM can be applied and gained experience in the process of translating belief network structure and CPT equations into code. \newline\
-Michael: I worked on Data exploration and the Maximum Likelihood Estimate algorithm, specifically the inference for the bayesian network and the evaluation functions. On the report, I wrote the parts for the MLE 
+Michael: I worked on data exploration and the Maximum Likelihood Estimate algorithm, specifically the inference for the bayesian network and the evaluation functions. On the report, I wrote the parts for the MLE 
 inference and the results pertaining to MLE. I learned a lot from the project, from the subject material regarding lichen and the different environmental impacts of pollutants. Additionally, I got the opportunity to help design and implement a belief network in code that models a real-world model with tangible applications as measuring air pollution is a relevant problem for today. 
 \newline
 Grant: I worked on the data discretization, formulating the model section of the paper, and MLE implementation, primarily formulating the equations and implementing the counts and CPTs. I learned overall how to apply the concept of MLE to real-world datasets and implement it into code.\newline
