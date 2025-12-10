@@ -43,6 +43,7 @@ def filterByNode(name, df, min=None, max=None, isNum = True, verbose=False):
 
     #Filter
     filtered_df = df.copy()
+    filtered_vals = filtered_df[col].unique()
     if isNum:
         filtered_df[col] = pd.to_numeric(df[col], errors='coerce')
         #Min / max
@@ -151,7 +152,9 @@ notNum_list = [
 df_mod = df.copy()
 elementNames = []
 for n in element_list+num_list:
+    print(n)
     df_mod, newCol = filterByNode(n,df_mod,verbose=False)
+    print(df_mod.shape)
     if n in element_list:
         elementNames.append(newCol)
 
@@ -179,6 +182,9 @@ bin_names = [b for b in list(df_mod.columns) if "_binned" in b]
 final_df = df_mod[bin_names]
 print(f'Cleaned dataset shape: {final_df.shape}')
 final_df.to_pickle('element_analysis.pkl')
+
+for i in final_df.columns:
+    print(f'{i}: {final_df[i].unique()}')
 
 #To load pickle file:
 #unpickled_df = pd.read_pickle('element_analysis.pkl') 
