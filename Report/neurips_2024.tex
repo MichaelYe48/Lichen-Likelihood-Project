@@ -94,38 +94,7 @@ Since the network structure and CPTs are defined over a finite number of discret
 
 While the original intention for discretizing air pollution score was to follow the USFS threshold values for 5 categories of air pollution, the dataset is not distributed equally between these categories and failed to learn the relationships between variables. Instead, air pollution scores were also binned by percentile into the categories of low, medium, and high. The lower bound of the "high" category roughly corresponds to USFS's threshold for if an area is affected by pollution (-0.11 and above). The split between "low" and "medium" categories does not directly correspond to a USFS pollution threshold, but can be thought of as "excellent" and "good", respectively.
 
-\newpage
-\begin{table}[h!]
-    \centering
-    \caption{Variable discretization and categorization}
-    \label{tab:data_dictionary}
-    % m{width}
-    \begin{tabular}{| m{3cm} | m{3.5cm} | m{7cm} |}
-        \hline
-        \textbf{Name} & \textbf{Label} & \textbf{Justification for inclusion} \\
-        \hline
-        Region & \makecell[l]{1-4, 5, 6, 7, 8-9, 10} & Locations for a sample are split into 10 regions across the US. The amount of a given element naturally available varies across regions. \\
-        \hline
-        Field Collection Date & \makecell[l]{Before 1995\\1995-2005\\2005 to present} & Pollution levels can change over time within an area from events like the passage of environmental protection laws or the opening of a mining operation nearby.\\
-        \hline
-        Air pollution score & \makecell[l]{Low ($<^-0.46$)\\Medium($^-0.46- ^-0.14$)\\High ($> -0.139$)} & This is a categorized score of ambient air quality, often determined by proximity to major industrial or traffic sources. This is our query node.\\
-        \hline
-        Lichen Species & \makecell[l]{Alectoria sarmentosa\\Flavoparmelia caperata\\Hypogymnia inactiva\\Letharia vulpina\\Platismatia glauca\\Other} & Lichen species can react very differently to different amounts of specific pollutants in the environment. By including this category, some of these relationships may be accounted for.\\
-        \hline
-        Tissue Composition: Nitrogen & \makecell[l]{Low ($<0.472$)\\Medium ($0.472-0.72$)\\High ($>0.72$)} & Nitrogen is a naturally found element that is essential to life. However, human usage of synthetic fertilizers and fossil fuels generate harmful nitrogen oxides (smog/greenhouse gasses).\\
-        \hline
-        Tissue Composition: Sulfur & \makecell[l]{Low ($<0.048$)\\Medium ($0.048-0.071$)\\High ($>0.071$)} & While beneficial in limited qualities, large amounts introduced to the environment through burning coal and heavy oil can lead to acid rain.\\
-        \hline
-        Tissue Composition: Phosphorus & \makecell[l]{Low ($<639.16$)\\Medium ($639.16-928$)\\High ($>928$)} & Phosphorus is found in commercial fertilizers. It is known to cause effects such as limited plant growth in freshwater lakes and deformities in frogs.\\
-        \hline
-        Tissue Composition: Lead & \makecell[l]{Low ($<2.86$)\\Medium ($2.86 - 3.739$)\\High ($>3.739$)} & Lead (and lead compounds) are among the greatest carcinogenic hazards to human health. Lead is exposed in mining operations or from leaded paint.\\
-        \hline
-        Tissue Composition: Copper & \makecell[l]{Low ($<2.17$)\\Medium($2.17 - 4.535$)\\High ($>4.535$)} & Copper is a naturally occurring heavy metal that is essential to life but toxic in high quantities. Only a small amount of copper in an environment is typically bio-available, which means directly observing the environmental levels is not an accurate measure of its effects. Copper can accumulate due to mining, fertilizer, manufacturing, etc.\\
-        \hline
-        Tissue Composition: Chromium & \makecell[l]{Low ($<.6$)\\Medium ($0.6-1.19$)\\High ($>1.19$)} & This trace element is one of the most toxic heavy metals. While the naturally occurring form is essential to life, even small amounts of Cr produced through industrial processes has extremely detrimental effects.\\
-        \hline
-    \end{tabular}
-\end{table}
+Please see Appendix A for the table describing each of the variables, their discretization, and the reasons for their inclusion in our models.
 
 \section{Modeling and Inference}
 
@@ -140,7 +109,7 @@ For all equations described, the following notation holds true:\\
 \end{itemize}
 
 \subsection{Bayesian Network with Complete Data}
-This model (See Appendix A) is a simplified representation of the data without a hidden node, and is to be used when the variables in the Bayesian Network are fully observed. Without a hidden node, Field Collection Date and Region connect directly to Pollution in the Environment and Lichen Species. This model assumes that the direct temporal and regional information is sufficient to predict pollution levels. Due to its simpler structure and its use of complete, observed data, this model allows for direct interpretability.
+This model (See Appendix B) is a simplified representation of the data without a hidden node, and is to be used when the variables in the Bayesian Network are fully observed. Without a hidden node, Field Collection Date and Region connect directly to Pollution in the Environment and Lichen Species. This model assumes that the direct temporal and regional information is sufficient to predict pollution levels. Due to its simpler structure and its use of complete, observed data, this model allows for direct interpretability.
 
 \subsubsection{Network Structure of Bayesian Network with Complete Data}
 Figure 2 depicts the graph structure of the Bayesian Network with Complete Data: Field Collection Date and Region serve as independent root nodes that connect directly to Pollution in the Environment and Lichen Species, without a hidden intermediary like with the model in Figure 1. Pollution in the Environment then also determines the lichen species and the tissue composition.
@@ -199,13 +168,14 @@ P(Pe | T, Sp)= \frac{P(Pe, T, Sp)}{P(T, Sp)}\]
 \[f_2=\sum_{f'}P(f')f_1\]
 \[=P(T|Sp,Pe)f_2\]
 \[\text{finally, we have } P(Pe|T,Sp)=\alpha P(T|Sp,Pe)f_2\]
+where $\alpha$ is the normalization constant.
 \subsection{Bayesian Network with Hidden Node}
 
 The rationale for introducing a hidden node to model hidden spatiotemporal aspects of the environment is twofold: firstly, despite the wealth of columns in the data about the environment in which the lichen were found in (region, elevation, etc.), there still could be some aspects of the environment not directly captured or observed in the dataset, such as microclimate. Addressing these in a hidden node will allow for the model to be more robust in its modeling of the relationship between lichen, their environment, and pollutants by acting as a latent variable that captures these other hidden aspects. Consequently, this model assumes that the effect of the temporal aspects of the environment on other nodes in the graph can be approximated by this hidden node. Secondly, some data in the dataset itself is lacking. The EM algorithm in conjunction with the hidden node structure handles incomplete data by inferring missing values in the E-step. This contrasts with case deletion or imputation that could introduce bias.
 
 \subsubsection{Network Structure of Bayesian Network with Hidden Node}
 
-For this Bayesian Network (See Appendix B), all nodes are the same as for the previous model besides the addition of a hidden node $H$. This node separates our region/environment variables from the lichen species and air pollution score. The goal of this node is to learn latent spatial temporal aspects such as seasonal patterns or regional mineral baselines. The presence of this node means that we cannot naively use a Maximum Likelihood Estimate like we would for a network with complete data without some additional work. Therefore, we will opt to learn our CPTs through the Expectation Maximization (EM) algorithm. For each sample we aim to first calculate the probability of our hidden variable (the relevance of our regional data) given our other observed features. This probability is our posterior. Then, in the Maximization step, we want to update our CPTs using the posterior we calculated in the E step. Essentially, we will use our estimated expectation to fill in the value of our hidden node. The ultimate goal of using EM for this task and introducing our hidden variable is to give our model some flexibility in terms of how it weights the relevance of our region based features.
+For this Bayesian Network (See Appendix C), all nodes are the same as for the previous model besides the addition of a hidden node $H$. This node separates our region/environment variables from the lichen species and air pollution score. The goal of this node is to learn latent spatial temporal aspects such as seasonal patterns or regional mineral baselines. The presence of this node means that we cannot naively use a Maximum Likelihood Estimate like we would for a network with complete data without some additional work. Therefore, we will opt to learn our CPTs through the Expectation Maximization (EM) algorithm. For each sample we aim to first calculate the probability of our hidden variable (the relevance of our regional data) given our other observed features. This probability is our posterior. Then, in the Maximization step, we want to update our CPTs using the posterior we calculated in the E step. Essentially, we will use our estimated expectation to fill in the value of our hidden node. The ultimate goal of using EM for this task and introducing our hidden variable is to give our model some flexibility in terms of how it weights the relevance of our region based features.
 
 \subsubsection{Optimization with Expectation Maximization}
 
@@ -291,8 +261,8 @@ The E and M steps are repeated in turn for every value of every node until the l
 We explored two different belief networks for this project, one with and one without a hidden node representing unobserved temporal qualities of the environment. These networks required us to use the Maximum Likelihood Estimate and Expectation Maximization algorithms.
 
 \subsection{Quantitative Results}
-To evaluate both the MLE and EM implementations, we utilized the accuracy of predictions on the test set (20\% of the dataset.) We calculated our predictions by taking our discretized air pollution score buckets and selecting the one that has the highest probability given the rest of our data using the CPTs of our model. Then, we can calculate the accuracy of our model on the test set by taking all of our predictions for each data point and determining the ratio of number of correct predictions to total number of samples. (For a table comparing the models, see Appendix C.)
-
+To evaluate both the MLE and EM implementations, we utilized the accuracy of predictions on the test set (20\% of the dataset.) We calculated our predictions by taking our discretized air pollution score buckets and selecting the one that has the highest probability given the rest of our data using the CPTs of our model. Then, we can calculate the accuracy of our model on the test set by taking all of our predictions for each data point and determining the ratio of number of correct predictions to total number of samples. (For a table comparing the models, see Appendix D.)
+Our baseline model that predicts the median air pollution score for all samples achieved an accuracy of 33.6\%.
 The MLE model predicting $P(Pe \mid Sp, T)$ achieved an accuracy of 52.2\%. Overall, our EM model appears to perform significantly better than our implementation of Maximum Likelihood Estimation. We can see that we are able to achieve peak accuracy scores of around {\textbf{72.4\%}}, and it seems that trying different numbers of iterations: \{25, 50, 100, 200, 300\} did not improve our prediction accuracy any more than what we achieved at 200 iterations.
 
 During training time, we also tracked the log-likelihood of our data in order to verify that we are learning. We can observe that our log-likelihood appears to plateau as we increase the number of iterations, indicating that we are close to convergence. We also attempted to vary the number of buckets for hidden nodes that we had in our belief network. Setting the number of hidden nodes from 2 to any of \{3, 5\} did not result in an increase in accuracy. Increasing the number of hidden nodes to 3 yielded an accuracy score of 57.5\% and increasing to 5 nodes yielded a higher accuracy score of 70.8\% which was still less than what we achieved with 2 hidden nodes.
@@ -300,12 +270,12 @@ During training time, we also tracked the log-likelihood of our data in order to
 Discuss what aspects of the data does the model capture or miss, and do the learned CPTs or latent states align with intuition?
 
 \subsection{Convergence and Scalability}
-For MLE, this calculation is performed on the observed data; thus, it scales linearly with the size of the dataset. More data will obviously yield a more accurate reflection of the data.
+For MLE, this calculation is performed on the observed data; thus, it scales linearly with the size of the dataset. More data will obviously yield a more accurate reflection of the data and help the model converge on the true value.
 As a result, our choice of configurations are limited since adjusting configurations for the MLE model would require shifting away from the network structure we believe is ideal for capturing the node relationships of our dataset. Similarly, beyond changing the network structure for the EM model, we are limited to only adjusting the initialization values of our model.
 
-For evaluating our EM implementation, we relied on accuracy score of predictions on our test set(which is 20\% of our dataset). For reference, we calculate our predictions by taking our discretized air pollution score buckets and selecting the one that has the highest probability given the rest of our data using the CPTs of our model. Then, we can calculate the accuracy of our model on the test set by taking all of our predictions for each data point and determining the ratio of number of correct predictions to total number of samples. During training time, we also track the log-likelihood of our data in order to verify that we are learning. \newline
+For evaluating our EM implementation, we relied on accuracy score of predictions on our test set(which is 20\% of our dataset). For reference, we calculate our predictions by taking our discretized air pollution score buckets and selecting the one that has the highest probability given the rest of our data using the CPTs of our model. Then, we can calculate the accuracy of our model on the test set by taking all of our predictions for each data point and determining the ratio of number of correct predictions to total number of samples. During training time, we also track the log-likelihood of our data in order to verify that we are learning (Appendix E). \newline
 Overall, our EM model appears to perform significantly better than our implementation of Maximum Likelihood Estimation. We can see that we are able to achieve peak accuracy scores of around {\textbf{72.4\%}}, and it seems that trying different numbers of iterations: \{25, 50, 100, 200, 300\} did not improve our prediction accuracy any more than what we achieved at 200 iterations. We can also see that our log-likelihood appears to plateau as we increase the number of iterations, indicating that we are close to convergence. We also attempted to vary the number of buckets for hidden nodes that we had in our belief network. Setting the number of hidden nodes from 2 to any of \{3, 5\} did not result in an increase in accuracy. Increasing the number of hidden nodes to 3 yielded an accuracy score of 57.5\% and increasing to 5 nodes yielded a higher accuracy score of 70.8\% which was still less than what we achieved with 2 hidden nodes.\newline
-\includegraphics[width=0.25\textwidth]{log_likelihood_curve.png}
+
 \section{Conclusion}
 
 We faced several limitations when developing our models. While we strove to simulate a scientifically accurate belief network using nodes derived from the data columns of our source, there were instances where we were unsure how to incorporate certain nodes like abundance. Furthermore, we were unable to use every column from the dataset due to sparsity and bad distribution. We had originally intended to employ far more parent nodes that capture environmental aspects like precipitation, elevation, and more, but we were limited by how sparse they were in the dataset and ultimately chose to not include them.
@@ -315,8 +285,8 @@ Potential extensions for our work would include building a more extensive belief
 
 Member contributions were as follows:\newline
 Tanishq: I worked on drafting the equations for the inference and updates for our CPTs using EM, implementing EM on our cleaned dataset, implementing log likelihood as a method of evaluation, and testing/evaluating the EM model. Through the process, I gained a much stronger understanding of how and where EM can be applied and gained experience in the process of translating belief network structure and CPT equations into code. \newline\
-Michael: I worked on the Maximum Likelihood Estimate algorithm, specifically the inference for the bayesian network and the evaluation functions. On the report, I wrote the parts for the MLE 
-inference and the results pertaining to MLE. I learned a lot from the project, from the subject material regarding lichen and the different environmental impacts of pollutants. Additionally, I got the opportunity to help create a belief network (and implement it in code) that models a real-world model with tangible applications as measuring air pollution is a relevant problem for today. 
+Michael: I worked on Data exploration and the Maximum Likelihood Estimate algorithm, specifically the inference for the bayesian network and the evaluation functions. On the report, I wrote the parts for the MLE 
+inference and the results pertaining to MLE. I learned a lot from the project, from the subject material regarding lichen and the different environmental impacts of pollutants. Additionally, I got the opportunity to help design and implement a belief network in code that models a real-world model with tangible applications as measuring air pollution is a relevant problem for today. 
 \newline
 Grant: I worked on the data discretization, formulating the model section of the paper, and MLE implementation, primarily formulating the equations and implementing the counts and CPTs. I learned overall how to apply the concept of MLE to real-world datasets and implement it into code.\newline
 Himanth: I worked on the data analyzation and processing, and I was also in charge of creating the Latex files for the first two milestones. I learned about how hard it is to work with a real world database in comparison to ones made specifically for homework.
@@ -362,6 +332,39 @@ Siena: I worked on drafting the EM equations, modeling both BNs, filtering and b
 \setcounter{section}{0}
 \renewcommand{\thesection}{\Alph{section}}
 
+\section{Variable Discretization and Categorization}
+\begin{table}[h!]
+    \centering
+    \caption{Variable discretization and categorization}
+    \label{tab:data_dictionary}
+    % m{width}
+    \begin{tabular}{| m{3cm} | m{3.5cm} | m{7cm} |}
+        \hline
+        \textbf{Name} & \textbf{Label} & \textbf{Justification for inclusion} \\
+        \hline
+        Region & \makecell[l]{1-4, 5, 6, 7, 8-9, 10} & Locations for a sample are split into 10 regions across the US. The amount of a given element naturally available varies across regions. \\
+        \hline
+        Field Collection Date & \makecell[l]{Before 1995\\1995-2005\\2005 to present} & Pollution levels can change over time within an area from events like the passage of environmental protection laws or the opening of a mining operation nearby.\\
+        \hline
+        Air pollution score & \makecell[l]{Low ($<^-0.46$)\\Medium($^-0.46- ^-0.14$)\\High ($> -0.139$)} & This is a categorized score of ambient air quality, often determined by proximity to major industrial or traffic sources. This is our query node.\\
+        \hline
+        Lichen Species & \makecell[l]{Alectoria sarmentosa\\Flavoparmelia caperata\\Hypogymnia inactiva\\Letharia vulpina\\Platismatia glauca\\Other} & Lichen species can react very differently to different amounts of specific pollutants in the environment. By including this category, some of these relationships may be accounted for.\\
+        \hline
+        Tissue Composition: Nitrogen & \makecell[l]{Low ($<0.472$)\\Medium ($0.472-0.72$)\\High ($>0.72$)} & Nitrogen is a naturally found element that is essential to life. However, human usage of synthetic fertilizers and fossil fuels generate harmful nitrogen oxides (smog/greenhouse gasses).\\
+        \hline
+        Tissue Composition: Sulfur & \makecell[l]{Low ($<0.048$)\\Medium ($0.048-0.071$)\\High ($>0.071$)} & While beneficial in limited qualities, large amounts introduced to the environment through burning coal and heavy oil can lead to acid rain.\\
+        \hline
+        Tissue Composition: Phosphorus & \makecell[l]{Low ($<639.16$)\\Medium ($639.16-928$)\\High ($>928$)} & Phosphorus is found in commercial fertilizers. It is known to cause effects such as limited plant growth in freshwater lakes and deformities in frogs.\\
+        \hline
+        Tissue Composition: Lead & \makecell[l]{Low ($<2.86$)\\Medium ($2.86 - 3.739$)\\High ($>3.739$)} & Lead (and lead compounds) are among the greatest carcinogenic hazards to human health. Lead is exposed in mining operations or from leaded paint.\\
+        \hline
+        Tissue Composition: Copper & \makecell[l]{Low ($<2.17$)\\Medium($2.17 - 4.535$)\\High ($>4.535$)} & Copper is a naturally occurring heavy metal that is essential to life but toxic in high quantities. Only a small amount of copper in an environment is typically bio-available, which means directly observing the environmental levels is not an accurate measure of its effects. Copper can accumulate due to mining, fertilizer, manufacturing, etc.\\
+        \hline
+        Tissue Composition: Chromium & \makecell[l]{Low ($<.6$)\\Medium ($0.6-1.19$)\\High ($>1.19$)} & This trace element is one of the most toxic heavy metals. While the naturally occurring form is essential to life, even small amounts of Cr produced through industrial processes has extremely detrimental effects.\\
+        \hline
+    \end{tabular}
+\end{table}
+
 
 \section{Bayesian Network Structure with Complete Data}
 
@@ -381,6 +384,8 @@ Siena: I worked on drafting the EM equations, modeling both BNs, filtering and b
 \end{figure}
 \FloatBarrier
 
+\newpage
+
 \section{Comparison of Pollution Element ($Pe$) Prediction Accuracy Across Different Bayesian Network Modeling Techniques}
 
 \begin{table}[h]
@@ -389,6 +394,8 @@ Siena: I worked on drafting the EM equations, modeling both BNs, filtering and b
         \toprule
         \textbf{Model Description} & \textbf{Estimation Method} & \textbf{Accuracy (\%)} \\
         \midrule
+        \textbf{Baseline Predictor} & Predict Median & 33.6 \\
+        \hline
         \textbf{Full Network Inference} & MLE (Counting) & 52.2 \\
         $P(Pe \mid Sp, T)$ & & \\
         \hline
@@ -398,6 +405,7 @@ Siena: I worked on drafting the EM equations, modeling both BNs, filtering and b
     \end{tabular}
     \label{tab:model_accuracy}
 \end{table}
+\FloatBarrier
 
 \section{Log Likelihood}
 \begin{figure}[h]
