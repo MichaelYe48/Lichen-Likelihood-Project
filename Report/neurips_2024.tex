@@ -148,14 +148,11 @@ P(F=f) =\frac{\sum_{t=1}^T I(f,f_t)}{T},
 \quad
 \]
 
-The equations for Pollution $P(Pe \mid R, F)$, Lichen Species $P(Sp \mid F, Pe)$ and Tissue Composition $P(E \mid Sp, Pe)$ are as follows. $E$ is used to represent all element nodes for tissue composition \{$TNi,\ TS,\ TP,\ TPb,\ TCu,\ TCr$\}.
+The equations for Pollution $P(Pe \mid R, F)$, Lichen Species $P(Sp \mid F, Pe)$ and Tissue Composition $P(E \mid Sp, Pe)$ are as follows. $E$ is used to represent each element node for tissue composition \{$TNi,\ TS,\ TP,\ TPb,\ TCu,\ TCr$\}.
 %
 \[P(Pe = p \mid R = r, F = f) = \frac{\sum_{t=1}^T I(p,p_t)\ I(r,r_t)\ I(f,f_t)}{\sum_{t=1}^T I(r,r_t)\ I(f,f_t)}\]
-
-\[P(Sp = sp \mid R = r, F = f, Pe = pe) =\frac{\sum_{n: R^{(n)} = r, F^{(n)} = f, Pe^(n) = pe, Sp^{(n)}=sp, } 1}{\sum_{n: R^{(n)} = r, F^{(n)} = f, Pe^{(n)} = pe} 1}\]
-
-\[P(T = t \mid Sp = sp, Pe=pe) =\frac{\sum_{n: Sp^{(n)}=sp,Pe^(n) = pe, T^{(n)}=t} 1}{\sum_{n: R^{(n)}=r, F^{(n)} = f} 1}\]
-
+\[P(Sp = s \mid R = r, F = f, Pe = p) = \frac{\sum_{t=1}^T I(s,s_t)\ I(r,r_t)\ I(f,f_t)\ I(p,p_t)}{\sum_{t=1}^T I(r,r_t)\ I(f,f_t)\ I(p,p_t)}\]
+\[P(E = e \mid Sp = s, Pe=p) = \frac{\sum_{t=1}^T I(e,e_t)\ I(s,s_t)\ I(p,p_t)}{\sum_{t=1}^T I(s,s_t)\ I(p,p_t)}\]
 We are looking to infer the pollution level given the lichen species and tissue composition. We represent this as
 \[
 P(Pe | T, Sp)\]
