@@ -110,10 +110,10 @@ For all equations described, the following notation holds true:\\
 \end{itemize}
 
 \subsection{Bayesian Network with Complete Data}
-This model (See Appendix B) is a simplified representation of the data without a hidden node, and is to be used when the variables in the Bayesian Network are fully observed. Without a hidden node, Field Collection Date and Region connect directly to Pollution in the Environment and Lichen Species. This model assumes that the direct temporal and regional information is sufficient to predict pollution levels. Due to its simpler structure and its use of complete, observed data, this model allows for direct interpretability.
+This model (See Appendix B) represents the relationship between our selected nodes from the dataset and is used when the variables in the Bayesian Network are fully observed. Due to its simple structure and the use of only completely observed data, the results can be directly interpreted. Maximum Likelihood Estimation is used to estimate the CPTs.
 
 \subsubsection{Network Structure of Bayesian Network with Complete Data}
-Figure 2 depicts the graph structure of the Bayesian Network with Complete Data: Field Collection Date and Region serve as independent root nodes that connect directly to Pollution in the Environment and Lichen Species, without a hidden intermediary like with the model in Figure 1. Pollution in the Environment then also determines the lichen species and the tissue composition.
+Appendix B, Figure 1 depicts the graph structure of the Bayesian Network with Complete Data. Field Collection Date and Region serve as root nodes that connect directly to Pollution and Lichen Species. These in turn affect the quantities of different elements within lichen tissue samples.
 
 This Bayesian Network contains the following nodes:
 \begin{itemize}
@@ -173,11 +173,13 @@ where
 \[\alpha\text{ is a normalizing constant such that the resulting probabilities sum to 1 i.e. }\sum_qP(q|E) = 1\]
 \subsection{Bayesian Network with Hidden Node}
 
-The rationale for introducing a hidden node to model hidden spatiotemporal aspects of the environment is twofold: firstly, despite the wealth of columns in the data about the environment in which the lichen were found in (region, elevation, etc.), there still could be some aspects of the environment not directly captured or observed in the dataset, such as microclimate. Addressing these in a hidden node will allow for the model to be more robust in its modeling of the relationship between lichen, their environment, and pollutants by acting as a latent variable that captures these other hidden aspects. Consequently, this model assumes that the effect of the temporal aspects of the environment on other nodes in the graph can be approximated by this hidden node. Secondly, some data in the dataset itself is lacking. The EM algorithm in conjunction with the hidden node structure handles incomplete data by inferring missing values in the E-step. This contrasts with case deletion or imputation that could introduce bias.
+For this Bayesian Network (See Appendix C), all nodes are the same as for the previous model besides the addition of a hidden node $H$. The goal of this node is to learn latent spatial temporal aspects such as seasonal patterns or regional mineral, which assumes the model can more meaningfully describe the relationship between the root nodes and their children via this hidden node instead of direct relationships. The presence of this node means that we cannot naively use Maximum Likelihood Estimation as the data is no longer complete for each sample. Therefore, we will opt to learn our CPTs through the Expectation Maximization (EM) algorithm. 
 
 \subsubsection{Network Structure of Bayesian Network with Hidden Node}
 
-For this Bayesian Network (See Appendix C), all nodes are the same as for the previous model besides the addition of a hidden node $H$. This node separates our region/environment variables from the lichen species and air pollution score. The goal of this node is to learn latent spatial temporal aspects such as seasonal patterns or regional mineral baselines. The presence of this node means that we cannot naively use a Maximum Likelihood Estimate like we would for a network with complete data without some additional work. Therefore, we will opt to learn our CPTs through the Expectation Maximization (EM) algorithm. For each sample we aim to first calculate the probability of our hidden variable (the relevance of our regional data) given our other observed features. This probability is our posterior. Then, in the Maximization step, we want to update our CPTs using the posterior we calculated in the E step. Essentially, we will use our estimated expectation to fill in the value of our hidden node. The ultimate goal of using EM for this task and introducing our hidden variable is to give our model some flexibility in terms of how it weights the relevance of our region based features.
+Appendix B, Figure 2 shows the updated belief network including the hidden node. This node separates our region/environment variables from the lichen species and air pollution score, but all other nodes are the same.
+
+For each sample we aim to first calculate the probability of our hidden variable (the relevance of our regional data) given our other observed features. This probability is our posterior. Then, in the Maximization step, we want to update our CPTs using the posterior we calculated in the E step. Essentially, we will use our estimated expectation to fill in the value of our hidden node. The ultimate goal of using EM for this task and introducing our hidden variable is to give our model some flexibility in terms of how it weights the relevance of our region based features.
 
 \subsubsection{Optimization with Expectation Maximization}
 
@@ -413,6 +415,7 @@ Siena: I worked on drafting the EM equations, modeling both BNs, filtering and b
     \centering
     \includegraphics[width=0.75\linewidth]{MLE_BN.png}
     \label{EM}
+    \caption{BN (without hidden node)}
 \end{figure}
 \FloatBarrier
 
@@ -422,6 +425,7 @@ Siena: I worked on drafting the EM equations, modeling both BNs, filtering and b
     \centering
     \includegraphics[width=0.75\linewidth]{EM_BN.png}
     \label{EM}
+    \caption{BN (with hidden node)}
 \end{figure}
 \FloatBarrier
 
