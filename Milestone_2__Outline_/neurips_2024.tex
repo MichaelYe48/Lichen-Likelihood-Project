@@ -1,0 +1,195 @@
+\documentclass{article}
+
+
+% ready for submission
+\usepackage{neurips_2024}
+
+
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{hyperref}       % hyperlinks
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+\usepackage{xcolor}         % colors
+\usepackage{amsmath}
+\usepackage{graphicx}
+
+
+\title{Lichen-Based Bayesian Networks for Pollution Inference}
+
+
+\author{%
+  Anonymous Authors \\
+  \texttt{email@domain.edu} \\
+  % examples of more authors
+  % \And
+  % Coauthor \\
+  % Affiliation \\
+  % Address \\
+  % \texttt{email} \\
+  % \AND
+  % Coauthor \\
+  % Affiliation \\
+  % Address \\
+  % \texttt{email} \\
+  % \And
+  % Coauthor \\
+  % Affiliation \\
+  % Address \\
+  % \texttt{email} \\
+  % \And
+  % Coauthor \\
+  % Affiliation \\
+  % Address \\
+  % \texttt{email} \\
+}
+
+
+\begin{document}
+
+
+\maketitle
+
+
+\begin{abstract}
+  The abstract paragraph should be indented \nicefrac{1}{2}~inch (3~picas) on
+  both the left- and right-hand margins. Use 10~point type, with a vertical
+  spacing (leading) of 11~points.  The word \textbf{Abstract} must be centered,
+  bold, and in point size 12. Two line spaces precede the abstract. The abstract
+  must be limited to one paragraph.
+\end{abstract}
+
+\section{Problem Description}
+
+The era of industrialization at the end of the 19th century is defined as much by its technology as by industrial pollution. The passage of laws such as the Clean Air Act and Clean Water Act have significantly limited the release of pollutants into the atmosphere and water, but there are still concerns about the long-term effects of current pollution levels. As such, the need for easy and inexpensive monitoring methods has become apparent. However, direct analysis of pollutants within an area can be difficult and costly. Contaminants may be hard to measure depending on how they disperse within an environment, and bioavailability cannot be taken into account.
+
+One method that has proven worthwhile is the use of certain organisms as bioindicators. The US Forest Service has been collecting data on lichen for this purpose since the 1970s. Lichen are particularly excellent specimens for bioindication. As epiphytes, they receive all of their nutrition and moisture from the air, which means they are especially sensitive to air pollution and changes in air quality. Their slow-growing but hearty nature also makes them highly likely to accumulate contaminants. By collecting data on tissue composition and abundance, scientists can monitor the health of local specimens and, by extension, forest health as a whole.
+
+The goal of this project is to predict the probability of pollution within the environment based on the lichen species and tissue element analysis values of a sample. In this way, lichen can be used to evaluate ecological health without needing to directly measure pollutants. We have chosen to model the complex relationship between spatiotemporal data, lichen sample data, and pollution with a Bayesian Network in two ways; one containing a hidden node and one explicitly defining the spatiotemporal data relationships. Expectation Maximization and Maximum Likelihood Estimation are used to estimate the desired relationship within the networks respectively.
+
+\section{Data Sourcing and Processing}
+
+Our data comes from U.S. Forest Service lichen biomonitoring programs, accessed via the NACSE “Lichen Air Quality” database exports (e.g., an air\_lichen\_query.csv file) and associated species lists. This table contains:
+\begin{itemize}
+    \item Lichen community data at many field plots (which species were present, abundance, etc.).
+    \item Lichen tissue chemistry for selected samples (element concentrations for metals and nutrients like copper, nitrogen, sulfur, etc.).
+    \item Environmental variables for each sample or plot (region, elevation, slope, approximate collection date, and precipitation where available).
+    \item Air pollution scores or categories derived by USFS from lichen community composition.
+\end{itemize}
+
+We also use external reference sources (USFS documentation, lichen and pollution literature, and plant/lichen species lists) to interpret and standardize species names and to choose meaningful thresholds for pollution and environmental buckets.
+
+At a broad level, we did two main kinds of preprocessing:
+
+\paragraph{Cleaning and standardizing lichen species information}
+
+Parse and normalize scientific names from reference tables so that each species/taxon has a consistent identifier across all files. Join those standardized names back to the lichen plot and tissue chemistry data so that species-level patterns can be analyzed reliably.
+
+\paragraph{Discretizing continuous variables into Bayesian Network–friendly categories}
+
+Air pollution score is converted into a categorical pollution level (e.g., low/medium/high) using USFS-based thresholds. Continuous environmental variables like elevation and collection date are binned into a small number of buckets (e.g., “low/mid/high elevation”) using domain-informed breakpoints. Tissue element concentrations (e.g., copper or nitrogen in lichen tissue) are also bucketed (e.g., “background / elevated / high”) to make conditional probability tables tractable.
+
+These steps are crucial because: If species names are inconsistent or misaligned across tables, we’d mix different taxa and distort the relationship between lichen communities, tissue chemistry, and pollution. Standardizing and joining species information ensures that when the model learns “this species tends to occur at high nitrogen sites” or “this tissue concentration pattern is associated with metal pollution,” it’s actually talking about the same organism. The network structure and CPTs are defined over finite states, so we must discretize continuous features (pollution scores, elevation, tissue concentrations, etc.) into meaningful categories. Doing this with USFS thresholds and literature-based breakpoints keeps the categories ecologically interpretable (e.g., what counts as “high” copper or “high” pollution from a lichen-bioindicator perspective).
+
+I’ll show the exact dataset information on Piazza, when I have time to write it up.
+
+\section{Modeling and Inference}
+
+The data can be arranged into a Bayesian Network to model dependencies between the environment, lichen tissue data, and the pollution found in the environment. The networks can be arranged into one utilizing complete data and one utilizing a hidden node to track unobserved temporal qualities about the environment.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.75\linewidth]{figure.png}
+    \label{fig:placeholder}
+\end{figure}
+\pagebreak
+The rationale for introducing a hidden node to model hidden temporal aspects of the environment is twofold: firstly, despite the wealth of columns in the data about the environment in which the lichen were found in (region, elevation, etc.), there still could be some aspects of the environment not directly captured or observed in the dataset, such as microclimate. Addressing these in a hidden node will allow for the model to be more robust in its modeling of the relationship between lichen, their environment, and pollutants by acting as a latent variable that captures these other hidden aspects. Secondly, some data in the dataset itself is lacking; for instance, approximately half of the Precipitation was not logged in the dataset. The EM algorithm in conjunction with the hidden node structure handles incomplete data by inferring missing values in the E-step. This contrasts with case deletion or imputation that could introduce bias.
+
+Both models assume that the air pollution category is determined by discretizing the air pollution score according to thresholds from USFS. For the network on the left, it is assumed that the effect of the temporal aspects of the environment on other nodes in the graph can be approximated by the hidden node, which represents a temporal quality of the environment that cannot be directly observed. Field Collection Data, Region, Slope, Elevation, and Precipitation, serve as parent nodes that provide information about the hidden temporal aspects of the environment. This environmental information feeds into the air pollution score and information about the lichen species, which in turn provide information about the abundance of different elements observed in the tissue samples of the lichen. Using Expectation Maximization, the posterior distribution over the hidden temporal state can be estimated and the model parameters can be updated, allowing for inference even when some information on the environment is not observed.
+
+For the network on the right, all environmental factors are observed, and the region serves as a parent node that dictates the slope, elevation and precipitation of the environment. These, along with field collection data, connect to the air pollution level and lichen species present. Using Maximum Likelihood Estimation, the CPTs can be computed directly using the observed data.
+
+For our network on the left, note that we have a hidden node that essentially separates our region/environment variables from our lichen species and air pollution score. The goal of the node is to learn a variable that represents the relevance of the factors local to the lichen sampling process to predicting air pollution level. The presence of this node means that we cannot naively use a Maximum Likelihood Estimate like we would for the network on the right without some additional work. Therefore, we will opt to learn our CPTs through the Expectation Maximization (EM) algorithm. For each sample we aim to first calculate the probability of our hidden variable (the relevance of our regional data) given our other observed features (this is our posterior). Then, in the Maximization step, we want to update our CPTs using the posterior we calculated as in the same way as described in class. We essentially use our estimated expectation to fill in the value of our hidden node. The ultimate goal of using EM for this task and introducing our hidden variable is to give our model some flexibility in terms of how it weights the relevance of our region based features.
+
+\[
+\begin{aligned}
+\text{Num}(h, pollution) = {} &
+P(Hidden = h \mid Region^{n}, FieldDate^{n}, Slope^{n}, Elevation^{n}, Precipitation^{n})\,\\
+& P(Pollution = pollution \mid Hidden = h)\, 
+P(Species^{n} \mid Hidden = h, Pollution = pollution)\,\\
+& P(Gas^{n} \mid Species^{n}, Pollution = pollution)\, 
+P(Metals^{n} \mid Species^{n}, Pollution = pollution)\,\\
+& P(Ash^{n} \mid Species^{n}, Pollution = pollution)\, \\
+& P(HeavyMetals^{n} \mid Species^{n}, Pollution = pollution),
+\end{aligned}
+\]
+
+\[
+\begin{aligned}
+\text{Den} = {} &
+\sum_{hidden'}\sum_{pollution'}
+P(Hidden = hidden' \mid Region^{n}, FieldDate^{n}, Slope^{n}, Elevation^{n}, Precipitation^{n})\, \\
+& P(Pollution = pollution' \mid Hidden = hidden')\,
+P(Species^{n} \mid Hidden = hidden', Pollution = pollution')\, \\
+& P(Gas^{n} \mid Species^{n}, Pollution = pollution')\,
+P(Metals^{n} \mid Species^{n}, Pollution = pollution')\, \\
+& P(Ash^{n} \mid Species^{n}, Pollution = pollution')\,
+P(HeavyMetals^{n} \mid Species^{n}, Pollution = pollution'),
+\end{aligned}
+\]
+
+\[
+\frac{\text{Num}(h, pollution)}{\text{Den}}.
+\]
+
+
+
+\section{Results and Discussion}
+
+We explored two different belief networks for this project, one with and one without a hidden node representing unobserved temporal qualities of the environment. These networks required us to use the Maximum Likelihood Estimate and Expectation Maximization algorithms. As a result, our choice of configurations are limited since adjusting configurations for the MLE model would require shifting away from the network structure we believe is ideal for capturing the node relationships of our dataset. Similarly, beyond changing the network structure for the EM model, we are limited to only adjusting the initialization values of our model.
+
+\section{Conclusion}
+
+We faced several limitations when developing our models. While we strove to simulate a scientifically accurate belief network using nodes derived from the data columns of our source, there were instances where we were unsure how to incorporate certain nodes like abundance. Furthermore, we were unable to use every column from the dataset due to sparsity and bad distribution.
+Potential extensions for our work would include building a more extensive belief network that brings together additional nodes that we excluded from this experiment.
+
+\section{Reflections \& Contributions}
+
+Blank
+
+\section*{References}
+
+[1] \url{https://www.nzdr.ru/data/media/biblio/kolxoz/P/PGp/Hill%20M.K.%20Understanding%20Environmental%20Pollution%20(draft,%203ed.,%20CUP,%202010)(ISBN%200521518660)(O)(602s)_PGp_.pdf}
+
+[2] \url{https://www.envchemgroup.com/understanding-environmental-pollution-element-by-element.html}
+
+[3] \url{https://www.researchgate.net/figure/Periodic-table-of-environmental-impacts-colored-according-to-the-color-ramp-above-A_fig3_263708668}
+
+[4] \url{https://gis.nacse.org/lichenair/index.php?page=cleansite}
+
+[5] \url{https://www.sciencedirect.com/science/article/abs/pii/S0045653520316301}
+
+[6] \url{https://internationalcopper.org/sustainable-copper/about-copper/copper-in-the-environment/}
+
+[7] \url{https://www.sciencedirect.com/science/article/abs/pii/S030147972100236X}
+
+[8] \url{https://www.sciencedirect.com/science/article/pii/S0045653524009214}
+
+[9] \url{https://gis.nacse.org/lichenair/index.php?page=airpollution#metals}
+
+[10] \url{https://www.atsdr.cdc.gov/toxprofiles/tp26-c1.pdf}
+
+[11] \url{https://www.nature.com/scitable/knowledge/library/bioindicators-using-organisms-to-measure-environmental-impacts-16821310/}
+
+[12] \url{https://www.sciencedirect.com/science/article/pii/S2950395723000012}
+
+[13] \url{https://www.fs.usda.gov/rm/pubs_rm/rm_gtr224.pdf}
+
+[14] \url{https://oceanservice.noaa.gov/education/tutorial_pollution/02history.html}
+
+[15] \url{https://plants.usda.gov/downloads}
+
+\end{document}

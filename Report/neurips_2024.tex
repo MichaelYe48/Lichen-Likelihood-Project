@@ -300,12 +300,12 @@ The MLE model predicting $P(Pe \mid Sp, T)$ achieved an accuracy of 52.2\%. Over
 
 During training time, we also tracked the log-likelihood of our data in order to verify that we are learning (see Appendix E). We can observe that our log-likelihood appears to plateau as we increase the number of iterations, indicating that we are close to convergence. Further increasing or decreasing the number of training iterations do not affect our final prediction accuracy. We also attempted to vary the number of hidden nodes that we had in our belief network. Setting the number of hidden nodes to all of $\{2,3,5\}$ did not result in an increase or decrease in accuracy. Rather, we saw that the log-likelihood converged/collapsed slightly faster with more  hidden nodes.
 \subsection{Qualitative Insights}
-Taking a look at the CPTs learned from our MLE model, we can quickly observe that region 10 historically has much better air quality than region 6.
+Taking a look at the CPTs learned from our MLE model (Appendix F), we can quickly observe that region 10 historically has much better air quality than region 6.
 This aligns with our intuition as region 10 represents Alaska, which is know to one of the lowest air pollution areas in the US due to its low population density whereas region 6 represents the Pacific Northwest which has a higher population density and more industrial activity.
 Our model appears to have missed the temporal aspect of the data as the CPTs indicate that air pollution has gotten worse in Alaska and the PNW over time, which is counter to the general trend of air pollution in the US decreasing over time due to environmental regulations.
 
 
-The CPTs learned from our EM model also indicate clearly that Region is the dominant driver behind our hidden node H. In particular, Region 10 has a strong correlation (99\%+) to one of our hidden node buckets, and Region 6 has an equally strong correlation to another. Furthermore, we can see that our hidden node (and therefore region) heavily influence the prediction for air pollution, where H=0 indicates pollution is low ~80\% of the time, and H=1 has a more even spread across pollution values. This is consistent with what we saw in the CPTs learned via MLE. We also see that, as expected, specific region(s) are tied heavily to our species nodes, like in region 10 (H=0) which is correlated to high probability density contributions from Species 1 (Alectoria Sarmentosa) across pollution levels. 
+The CPTs learned from our EM model (Appendix G) also indicate clearly that Region is the dominant driver behind our hidden node H. In particular, Region 10 has a strong correlation (99\%+) to one of our hidden node buckets, and Region 6 has an equally strong correlation to another. Furthermore, we can see that our hidden node (and therefore region) heavily influence the prediction for air pollution, where H=0 indicates pollution is low ~80\% of the time, and H=1 has a more even spread across pollution values. This is consistent with what we saw in the CPTs learned via MLE. We also see that, as expected, specific region(s) are tied heavily to our species nodes, like in region 10 (H=0) which is correlated to high probability density contributions from Species 1 (Alectoria Sarmentosa) across pollution levels. 
 
 \subsection{Convergence and Scalability}
 For MLE, this calculation is performed on the observed data; thus, it scales linearly with the size of the dataset. More data will obviously yield a more accurate reflection of the data and help the model converge on the true value.
@@ -488,6 +488,7 @@ Siena: I worked on drafting the EM equations, modeling both BNs, filtering and b
         \hline
     \end{tabular}
 \end{table}
+\FloatBarrier
 
 \begin{table}[h]
     \centering
@@ -506,6 +507,7 @@ Siena: I worked on drafting the EM equations, modeling both BNs, filtering and b
     \hline
     \end{tabular}
 \end{table}
+\FloatBarrier
 
 \begin{table}[h]
     \centering
@@ -543,6 +545,7 @@ Siena: I worked on drafting the EM equations, modeling both BNs, filtering and b
     \hline
     \end{tabular}
 \end{table}
+\FloatBarrier
 
 \begin{table}[h]
     \centering
@@ -607,6 +610,7 @@ Siena: I worked on drafting the EM equations, modeling both BNs, filtering and b
     \hline
     \end{tabular}
 \end{table}
+\FloatBarrier
 
 \begin{table}[h]
     \centering
@@ -633,6 +637,7 @@ Siena: I worked on drafting the EM equations, modeling both BNs, filtering and b
     \hline
     \end{tabular}
 \end{table}
+\FloatBarrier
 
 \begin{table}[h]
     \centering
@@ -659,6 +664,7 @@ Siena: I worked on drafting the EM equations, modeling both BNs, filtering and b
     \hline
     \end{tabular}
 \end{table}
+\FloatBarrier
 
 \begin{table}[h]
     \centering
@@ -685,6 +691,7 @@ Siena: I worked on drafting the EM equations, modeling both BNs, filtering and b
     \hline
     \end{tabular}
 \end{table}
+\FloatBarrier
 
 \begin{table}[h]
     \centering
@@ -711,6 +718,7 @@ Siena: I worked on drafting the EM equations, modeling both BNs, filtering and b
     \hline
     \end{tabular}
 \end{table}
+\FloatBarrier
 
 \begin{table}[h]
     \centering
@@ -737,6 +745,7 @@ Siena: I worked on drafting the EM equations, modeling both BNs, filtering and b
     \hline
     \end{tabular}
 \end{table}
+\FloatBarrier
 
 \begin{table}[h]
     \centering
@@ -763,6 +772,7 @@ Siena: I worked on drafting the EM equations, modeling both BNs, filtering and b
     \hline
     \end{tabular}
 \end{table}
+\FloatBarrier
 
 \section{EM CPTs}
 \begin{table}[h!]
@@ -824,6 +834,7 @@ Siena: I worked on drafting the EM equations, modeling both BNs, filtering and b
         \hline
     \end{tabular}
 \end{table}
+\FloatBarrier
 \begin{table}[h!]
     \centering
     \caption{Conditional Probability Table $P(\text{Copper (binned)} \mid \text{Pollution, Species})$}
@@ -852,6 +863,8 @@ Siena: I worked on drafting the EM equations, modeling both BNs, filtering and b
         \hline
     \end{tabular}
 \end{table}
+\FloatBarrier
+
 \begin{table}[h!]
     \centering
     \caption{Conditional Probability Table $P(\text{Lead (binned)} \mid \text{Pollution, Species})$}
@@ -880,6 +893,8 @@ Siena: I worked on drafting the EM equations, modeling both BNs, filtering and b
         \hline
     \end{tabular}
 \end{table}
+\FloatBarrier
+
 \begin{table}[h!]
     \centering
     \caption{Conditional Probability Table $P(\text{Phosphorous (binned)} \mid \text{Pollution, Species})$}
@@ -900,7 +915,7 @@ Siena: I worked on drafting the EM equations, modeling both BNs, filtering and b
         medium & Species 4 & 0.4492 & 0.3369 & 0.2139 \\
         medium & Species 5 & 0.2711 & 0.5616 & 0.1673 \\
         \hline
-        high & Other & 0.0867 & 0.2532 & 0.6601 \\
+        high & Other & 0.0867 & 0.2532 & 0.6601 \\ 
         high & Species 1 & 0.5306 & 0.3316 & 0.1378 \\
         high & Species 3 & 0.0359 & 0.3049 & 0.6591 \\
         high & Species 4 & 0.3553 & 0.3700 & 0.2747 \\
@@ -908,6 +923,8 @@ Siena: I worked on drafting the EM equations, modeling both BNs, filtering and b
         \hline
     \end{tabular}
 \end{table}
+\FloatBarrier
+
 \begin{table}[h!]
     \centering
     \caption{Conditional Probability Table $P(\text{Sulfur (binned)} \mid \text{Pollution, Species})$}
@@ -936,6 +953,8 @@ Siena: I worked on drafting the EM equations, modeling both BNs, filtering and b
         \hline
     \end{tabular}
 \end{table}
+\FloatBarrier
+
 \begin{table}[h!]
     \centering
     \caption{Conditional Probability Table $P(\text{Nitrogen (binned)} \mid \text{Pollution, Species})$}
@@ -964,6 +983,8 @@ Siena: I worked on drafting the EM equations, modeling both BNs, filtering and b
         \hline
     \end{tabular}
 \end{table}
+\FloatBarrier
+
 \begin{table}[h!]
     \centering
     \caption{Conditional Probability Table $P(\text{Species} \mid H, \text{Pollution})$}
@@ -998,6 +1019,8 @@ Siena: I worked on drafting the EM equations, modeling both BNs, filtering and b
         \hline
     \end{tabular}
 \end{table}
+\FloatBarrier
+
 \begin{table}[h!]
     \centering
     \caption{Conditional Probability Table $P(H \mid \text{Region, Year})$}
@@ -1015,5 +1038,6 @@ Siena: I worked on drafting the EM equations, modeling both BNs, filtering and b
         \hline
     \end{tabular}
 \end{table}
+\FloatBarrier
 
 \end{document}
