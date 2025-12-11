@@ -255,40 +255,44 @@ $$P(X=x \mid Sp=s, Pe=p) = \frac{\sum_{t=1}^T I(x,x_t)\ I(s,s_t)\ I(p,p_t)}
 \vspace{-1ex}
 \paragraph{Running EM}
 \vspace{-2ex}
-The E and M steps are repeated in turn for every value of every node until the log-likelihood of the data converges or a maximum number of iterations is reached. As a reminder, we compute our log likelihood as: 
+The E and M steps are repeated in turn for every value of every node until the log-likelihood of the data converges or a maximum number of iterations is reached. As a reminder, we compute our log likelihood the following, where $\vec{E}$ represents the set of tissue composition nodes: 
 \[
 \log L
 = 
-\sum_{i=1}^{N}
+\sum_{t=1}^{T}
 \log 
 \left[
 \sum_{h=1}^{H}
-P(h \mid r_i, f_i)\;
-P(Pe_i \mid h)\;
-P(sp_i \mid h, Pe_i)\;
-\prod_{t\in\mathcal{T}} P(t_{ik} \mid Pe_i, sp_i)
+P(h \mid r_t, f_t)\;
+P(Pe_t \mid h)\;
+P(s_t \mid h, Pe_t)\;
+\prod_{E\in \vec{E}} P(e_{tk} \mid Pe_t, s_t)
 \right]
 \]
-Once we have learned our CPTs, we want to determine a relationship between the element analysis and tissue data from our lichen. We do this using our CPTs to calculate: 
+Once we have learned our CPTs, we want to determine the relationship between the pollution levels and tissue data from our lichen. We do this using our CPTs to perform exact inference and calculate: 
+$$P(\mathrm{Pe}=p \mid \vec{E}=\vec{e},\ \mathrm{Sp=s}) = $$
+\vspace{1ex}
 \[
-P(\mathrm{Pe}=pe \mid \text{T=t},\, \mathrm{Sp=sp})
-=
 \frac{
 \displaystyle
-\sum_{h}
-P(H=h)\,
-P(\mathrm{Pe}=pe \mid H=h)\,
-\prod_{t \in \mathcal{T}}
-P\!\left(t=t \mid \mathrm{Pe}=pe,\; \mathrm{sp}\right)
+\sum_{h',r',f'}
+P(R=r')\,
+P(F=f')\,
+P(H=h' \mid r',\ f')
+P(p \mid H=h')\,
+\prod_{E \in \vec{E}}
+P\!\left(E=e \mid p,\; s\right)
 }{
-\displaystyle\sum_{pe'}
-\sum_{h}
-P(H=h)\,
-P(\mathrm{Pe}=pe' \mid H=h)\,
-\prod_{t \in \mathcal{T}}
-P\!\left(t=t \mid \mathrm{Pe}=pe',\; \mathrm{sp}\right)
+\displaystyle\sum_{p',h',r',f'}
+P(R=r')\,
+P(F=f')\,
+P(H=h' \mid r',\ f')
+P(p' \mid H=h')\,
+\prod_{E \in \vec{E}}
+P\!\left(E=e \mid p',\; s\right)
 }
 \]
+
 \section{Results and Discussion}
 
 \subsection{Compare and Contrast of Different Network Structures}
